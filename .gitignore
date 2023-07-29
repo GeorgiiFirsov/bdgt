@@ -1,0 +1,12 @@
+# Known folders
+/target
+
+# Hidden files
+.*
+!/.github
+!/.gitignore
+!/.gitmodules
+
+# Devcontainer files exclusions
+!/.devcontainer
+!/.devcontainer/*
