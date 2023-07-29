@@ -16,3 +16,8 @@ DB consists of 3 tables:
 - Transactions. This is the main table with all the transactions performed.
   For each transaction DB stores bank account and category references as
   long as amount of money gained or spent.
+
+Physical ER-diagram of `bdgt`'s DB demonstrates some low-level details 
+such as encrypted columns and is shown below.
+
+![Physical ER-diagram](../pictures/er-physical.drawio.png)
