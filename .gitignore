@@ -10,3 +10,6 @@
 # Devcontainer files exclusions
 !/.devcontainer
 !/.devcontainer/*
+
+# Some vscode folders
+!/.vscode
