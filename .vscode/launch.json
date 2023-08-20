@@ -1,0 +1,46 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'bdgt'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=bdgt",
+                    "--package=bdgt"
+                ],
+                "filter": {
+                    "name": "bdgt",
+                    "kind": "bin"
+                }
+            },
+            // Just some key identifier here
+            "args": ["fill-key-id"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'bdgt'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=bdgt",
+                    "--package=bdgt"
+                ],
+                "filter": {
+                    "name": "bdgt",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
