@@ -5,3 +5,10 @@ FROM mcr.microsoft.com/devcontainers/rust:1-1-bullseye
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
    && apt-get -y install clang lld \
    && apt-get autoremove -y && apt-get clean -y
+
+# Run configuration script
+ADD ./configure.sh /tmp/
+RUN sudo chmod +x /tmp/configure.sh \
+   && sudo /tmp/configure.sh \
+   && sudo rm -f /tmp/configure.sh
+   
