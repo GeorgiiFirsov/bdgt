@@ -64,7 +64,8 @@ impl Command for Initialize {
 
         let loc = HomeLocation::new();
         if loc.exists() {
-            return Err(Error::from_message_with_extra(errors::ALREADY_INITIALIZED, loc.root().to_str().unwrap()));
+            return Err(Error::from_message_with_extra(
+                errors::ALREADY_INITIALIZED, loc.root().to_str().unwrap()));
         }
 
 
