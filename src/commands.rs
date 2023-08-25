@@ -54,6 +54,13 @@ impl Command for Initialize {
     fn make_command() -> clap::Command {
         clap::Command::new(Self::VERB)
             .about("Initialize storage and use key_id for sensitive data protection")
+            .long_about(concat!(
+                "This command MUST be invoked before any other command may be run.\n",
+                "Specifier key_id MUST be a valid key identifier for used cryptographic engine.\n",
+                "Key MUST be asymmetric and be suitable for encryption and decryption:\n",
+                "\t- MUST contain private key;\n",
+                "\t- MUST have encryption key usage."
+            ))
             .arg(clap::arg!(<key_id> "key identifier for data protection"))
     }
 
