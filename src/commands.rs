@@ -20,9 +20,31 @@ pub(crate) trait Command {
     /// Command name.
     const VERB: &'static str;
 
+    /// Short description.
+    const ABOUT: &'static str;
+
+    /// Long description.
+    const LONG_ABOUT: &'static str;
+
     /// Creates a [`clap::Command`] instance for itself.
+    /// 
     /// Can for instance define some arguments for the command.
-    fn make_command() -> clap::Command;
+    /// By default provides short and long description and calls
+    /// arguments setup.
+    fn make_command() -> clap::Command {
+        Self::add_args(
+            clap::Command::new(Self::VERB)
+                .about(Self::ABOUT)
+                .long_about(Self::LONG_ABOUT)   
+        )
+    }
+
+    /// Adds necessary arguments to a command.
+    /// 
+    /// By default does nothing.
+    fn add_args(command: clap::Command) -> clap::Command {
+        command
+    }
 
     /// Invocation of the command.
     /// 
@@ -51,17 +73,18 @@ pub(crate) struct Initialize;
 impl Command for Initialize {
     const VERB: &'static str = "init";
 
-    fn make_command() -> clap::Command {
-        clap::Command::new(Self::VERB)
-            .about("Initialize storage and use key_id for sensitive data protection")
-            .long_about(concat!(
-                "This command MUST be invoked before any other command may be run.\n",
-                "Specifier key_id MUST be a valid key identifier for used cryptographic engine.\n",
-                "Key MUST be asymmetric and be suitable for encryption and decryption:\n",
-                "\t- MUST contain private key;\n",
-                "\t- MUST have encryption key usage."
-            ))
-            .arg(clap::arg!(<key_id> "key identifier for data protection"))
+    const ABOUT: &'static str = "Initialize storage and use key_id for sensitive data protection";
+
+    const LONG_ABOUT: &'static str = concat!(
+        "This command MUST be invoked before any other command may be run.\n",
+        "Specifier key_id MUST be a valid key identifier for used cryptographic engine.\n",
+        "Key MUST be asymmetric and be suitable for encryption and decryption:\n",
+        "\t- MUST contain private key;\n",
+        "\t- MUST have encryption key usage."
+    );
+
+    fn add_args(command: clap::Command) -> clap::Command {
+        command.arg(clap::arg!(<key_id> "key identifier for data protection"))
     }
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
