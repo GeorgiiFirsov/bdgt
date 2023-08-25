@@ -24,7 +24,9 @@ pub(crate) trait Command {
     const ABOUT: &'static str;
 
     /// Long description.
-    const LONG_ABOUT: &'static str;
+    /// 
+    /// By default it is empty.
+    const LONG_ABOUT: &'static str = "";
 
     /// Creates a [`clap::Command`] instance for itself.
     /// 
