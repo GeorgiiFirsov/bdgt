@@ -2,6 +2,7 @@ extern crate libbdgt;
 extern crate clap;
 
 mod commands;
+mod binding;
 mod errors;
 
 
