@@ -21,7 +21,7 @@ type Storage = DbStorage;
 /// Performs initialization of the storage.
 /// 
 /// * `key_id` - identifier of a key used to protect data
-pub(crate) fn initialize(key_id: &str) -> Result<Budget<Engine, Storage>> {
+pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget<Engine, Storage>> {
     //
     // Check for storage existence
     //

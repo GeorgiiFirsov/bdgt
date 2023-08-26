@@ -85,7 +85,7 @@ impl Command for Initialize {
         //
 
         let key_id = Self::parse_args(matches)?;
-        let budget = binding::initialize(&key_id)?;
+        let budget = binding::initialize_budget(&key_id)?;
 
         //
         // Just to be nice -- print some information
