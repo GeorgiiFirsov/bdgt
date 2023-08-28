@@ -20,6 +20,7 @@ fn run() -> libbdgt::error::Result<()> {
         .arg_required_else_help(true)
         .propagate_version(true)
         .subcommand(commands::Initialize::make_command())
+        .subcommand(commands::AddTransaction::make_command())
         .get_matches();
 
     //
@@ -28,6 +29,7 @@ fn run() -> libbdgt::error::Result<()> {
 
     match matches.subcommand() {
         Some((commands::Initialize::VERB, sub_matches)) => commands::Initialize::invoke(sub_matches),
+        Some((commands::AddTransaction::VERB, sub_matches)) => commands::AddTransaction::invoke(sub_matches),
         _ => unreachable!("This code is unreachable due to 'subcommand_required' call")
     }
 }
