@@ -55,6 +55,19 @@ trait CommandInternal {
     /// 
     /// * `matches` - set of provided arguments to parse
     fn parse_args(matches: &clap::ArgMatches) -> Result<Self::ParsedArgs>;
+
+    /// Parses single value for a given argument.
+    /// 
+    /// * `matches` - set of provided arguments to parse
+    /// * `name` - name of an argument to parse value for
+    fn get_one<T>(matches: &clap::ArgMatches, name: &str) -> Result<T>
+    where
+        T: ToOwned<Owned = T> + Clone + Send + Sync + 'static
+    {
+        matches.get_one::<T>(name)
+            .map(T::to_owned)
+            .ok_or(Error::from_message_with_extra(errors::PARSE_ERROR, name))
+    }
 }
 
 
@@ -103,8 +116,6 @@ impl CommandInternal for Initialize {
     type ParsedArgs = String;
 
     fn parse_args(matches: &clap::ArgMatches) -> Result<Self::ParsedArgs> {
-        matches.get_one::<String>("key_id")
-            .map(String::to_owned)
-            .ok_or(Error::from_message_with_extra(errors::PARSE_ERROR, Self::VERB))
+        Self::get_one(matches, "key_id")
     }
 }
