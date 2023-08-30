@@ -4,6 +4,7 @@ extern crate clap;
 mod command;
 mod binding;
 mod errors;
+mod misc;
 
 
 use command::Command;
