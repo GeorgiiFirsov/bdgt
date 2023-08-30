@@ -7,6 +7,6 @@ mod initialize;
 mod add_transaction;
 
 
-pub(crate) use command::Command;
-pub(crate) use initialize::Initialize;
-pub(crate) use add_transaction::AddTransaction;
+pub(crate) use self::command::Command;
+pub(crate) use self::initialize::Initialize;
+pub(crate) use self::add_transaction::AddTransaction;
