@@ -1,12 +1,12 @@
 extern crate libbdgt;
 extern crate clap;
 
-mod commands;
+mod command;
 mod binding;
 mod errors;
 
 
-use commands::Command;
+use command::Command;
 
 
 /// Runs main app's process.
@@ -19,8 +19,8 @@ fn run() -> libbdgt::error::Result<()> {
         .subcommand_required(true)
         .arg_required_else_help(true)
         .propagate_version(true)
-        .subcommand(commands::Initialize::make_command())
-        .subcommand(commands::AddTransaction::make_command())
+        .subcommand(command::Initialize::make_command())
+        .subcommand(command::AddTransaction::make_command())
         .get_matches();
 
     //
@@ -28,8 +28,8 @@ fn run() -> libbdgt::error::Result<()> {
     //
 
     match matches.subcommand() {
-        Some((commands::Initialize::VERB, sub_matches)) => commands::Initialize::invoke(sub_matches),
-        Some((commands::AddTransaction::VERB, sub_matches)) => commands::AddTransaction::invoke(sub_matches),
+        Some((command::Initialize::VERB, sub_matches)) => command::Initialize::invoke(sub_matches),
+        Some((command::AddTransaction::VERB, sub_matches)) => command::AddTransaction::invoke(sub_matches),
         _ => unreachable!("This code is unreachable due to 'subcommand_required' call")
     }
 }
