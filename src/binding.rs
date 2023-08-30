@@ -37,7 +37,7 @@ pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget<Engine, Storage>>
     //
 
     let id = KeyId::new(key_id);
-    let mut engine = Engine::new()?;
+    let engine = Engine::new()?;
     engine.lookup_key(&id)?;
 
     //
