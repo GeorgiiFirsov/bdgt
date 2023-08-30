@@ -4,8 +4,6 @@ mod command;
 // List of modules corresponding to commands
 //
 mod initialize;
-
-#[path="./add-transaction.rs"]
 mod add_transaction;
 
 
