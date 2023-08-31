@@ -7,7 +7,7 @@ use crate::binding;
 use crate::misc;
 
 
-/// Transaction addition command. Adds a new transaction in interactive mode.
+/// Category addition command. Adds a new category in interactive mode.
 pub(crate) struct AddCategory;
 
 
