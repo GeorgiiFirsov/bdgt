@@ -62,7 +62,7 @@ impl AddCategory {
 
         Ok(Category { 
             name: name, 
-            category_type: misc::either!(selection == 0 => CategoryType::Income; CategoryType::Outcome)
+            category_type: common::category_type_by_index(selection)?
         })
     }
 
