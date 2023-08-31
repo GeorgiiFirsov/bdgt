@@ -1,4 +1,5 @@
 mod command;
+mod common;
 
 //
 // List of modules corresponding to commands
