@@ -1,3 +1,4 @@
+extern crate dialoguer;
 extern crate libbdgt;
 extern crate clap;
 
@@ -22,6 +23,7 @@ fn run() -> libbdgt::error::Result<()> {
         .propagate_version(true)
         .subcommand(command::Initialize::make_command())
         .subcommand(command::AddTransaction::make_command())
+        .subcommand(command::AddCategory::make_command())
         .get_matches();
 
     //
@@ -31,6 +33,7 @@ fn run() -> libbdgt::error::Result<()> {
     match matches.subcommand() {
         Some((command::Initialize::VERB, sub_matches)) => command::Initialize::invoke(sub_matches),
         Some((command::AddTransaction::VERB, sub_matches)) => command::AddTransaction::invoke(sub_matches),
+        Some((command::AddCategory::VERB, sub_matches)) => command::AddCategory::invoke(sub_matches),
         _ => unreachable!("This code is unreachable due to 'subcommand_required' call")
     }
 }
