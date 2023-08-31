@@ -18,7 +18,7 @@ type Storage = storage::DbStorage;
 /// Config type alias, that corresponds to selected engine.
 type Config = config::Config<Engine>;
 
-/// Final budget manager type.
+/// Final budget manager type. It is a main interaction point with [`libbdgt].
 pub(crate) type Budget = budget::Budget<Engine, Storage>;
 
 
