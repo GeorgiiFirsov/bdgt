@@ -1,5 +1,5 @@
 use libbdgt::error::Result;
-use libbdgt::storage::{Category, CategoryType};
+use libbdgt::storage::Category;
 
 use super::command::{Command, CommandInternal};
 use super::common;
