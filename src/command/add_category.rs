@@ -52,13 +52,10 @@ impl CommandInternal for AddCategory {
 
 impl AddCategory {
     fn input_category() -> Result<Category> {
-        let selection = dialoguer::Select::new()
-            .with_prompt("Select what type of category you want")
-            .items(&common::category_types())
-            .default(0)
-            .interact()?;
-
-        let name = misc::input_string_with_prompt("Enter category name: ")?;
+        let selection = misc::select_from_with_prompt(&common::category_types(), 
+            "Select what type of category you want")?;
+            
+        let name = misc::input_string_with_prompt("Enter category name")?;
 
         Ok(Category { 
             name: name, 

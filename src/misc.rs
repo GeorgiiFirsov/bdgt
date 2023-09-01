@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use libbdgt::error::Result;
 
 
@@ -34,13 +32,29 @@ pub(crate) fn input_string_with_prompt<S>(prompt: S) -> Result<String>
 where
     S: Into<String>
 {
-    print!("{}", prompt.into());
-    std::io::stdout()
-        .flush()?;
-
-    let mut input = String::new();
-    std::io::stdin()
-        .read_line(&mut input)?;
+    let input = dialoguer::Input::new()
+        .with_prompt(prompt)
+        .allow_empty(false)
+        .interact_text()?;
 
     Ok(input)
+}
+
+
+/// Displays selection menu using given items and prompt.
+/// 
+/// * `items` - items to select from
+/// * `prompt` - string to display before input
+pub(crate) fn select_from_with_prompt<T, S>(items: &[T], prompt: S) -> Result<usize>
+where
+    T: ToString,
+    S: Into<String>
+{
+    let selection = dialoguer::Select::new()
+        .with_prompt(prompt)
+        .items(items)
+        .default(0)
+        .interact()?;
+
+    Ok(selection)
 }
