@@ -8,34 +8,42 @@ mod errors;
 mod misc;
 
 
+use libbdgt::error::Result;
+
 use command::Command;
 
 
+/// Macro, that simplifies working with commands.
+/// Automatically handles all given commands with their arguments.
+macro_rules! handle_commands {
+    ( $($command:ty),+ $(,)? ) => {
+        match clap::command!()
+            .subcommand_required(true)
+            .arg_required_else_help(true)
+            .propagate_version(true)
+            $(.subcommand(<$command>::make_command()))+
+            .get_matches()
+            .subcommand()
+        {
+            $(Some((<$command>::VERB, sub_matches)) => <$command>::invoke(sub_matches),)+
+            _ => unreachable!("This code is unreachable due to 'subcommand_required' call")
+        }
+    };
+}
+
+
 /// Runs main app's process.
-fn run() -> libbdgt::error::Result<()> {
+fn run() -> Result<()> {
     //
-    // Let's describe available commands in a declarative way
-    //
-
-    let matches = clap::command!()
-        .subcommand_required(true)
-        .arg_required_else_help(true)
-        .propagate_version(true)
-        .subcommand(command::Initialize::make_command())
-        .subcommand(command::AddTransaction::make_command())
-        .subcommand(command::AddCategory::make_command())
-        .get_matches();
-
-    //
-    // And now it's time to run
+    // Just handle available commands in a declarative way 
+    // with the nice macro above
     //
 
-    match matches.subcommand() {
-        Some((command::Initialize::VERB, sub_matches)) => command::Initialize::invoke(sub_matches),
-        Some((command::AddTransaction::VERB, sub_matches)) => command::AddTransaction::invoke(sub_matches),
-        Some((command::AddCategory::VERB, sub_matches)) => command::AddCategory::invoke(sub_matches),
-        _ => unreachable!("This code is unreachable due to 'subcommand_required' call")
-    }
+    handle_commands!(
+        command::Initialize,
+        command::AddTransaction,
+        command::AddCategory,
+    )
 }
 
 
