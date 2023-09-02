@@ -20,3 +20,14 @@ pub(crate) fn category_type_by_index(idx: usize) -> Result<CategoryType> {
         _     => Err(Error::from_message_with_extra(errors::VALUE_OUT_OF_RANGE, format!("index: {}", idx)))
     }
 }
+
+
+/// Converts category type into a string.
+/// 
+/// * `category_type` - type to convert
+pub(crate) fn category_type_to_string(category_type: CategoryType) -> String {
+    match category_type {
+        CategoryType::Income  => "Income".to_owned(),
+        CategoryType::Outcome => "Outcome".to_owned(),
+    }
+}

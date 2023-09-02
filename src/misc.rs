@@ -60,6 +60,24 @@ where
 }
 
 
+/// Displays selection menu with multiple selection using given items and prompt.
+/// 
+/// * `items` - items to select from
+/// * `prompt` - string to display before input
+pub(crate) fn select_multiple_from_with_prompt<T, S>(items: &[T], prompt: S) -> Result<Vec<usize>>
+where
+    T: ToString,
+    S: Into<String>
+{
+    let selection = dialoguer::MultiSelect::new()
+        .with_prompt(prompt)
+        .items(items)
+        .interact()?;
+
+    Ok(selection)
+}
+
+
 /// Displays confirmation menu with given default selection and prompt.
 /// 
 /// * `prompt` - string to display before input

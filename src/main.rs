@@ -1,4 +1,5 @@
 extern crate dialoguer;
+extern crate itertools;
 extern crate libbdgt;
 extern crate clap;
 
@@ -43,6 +44,7 @@ fn run() -> Result<()> {
         command::Initialize,
         command::AddTransaction,
         command::AddCategory,
+        command::RemoveCategory,
     )
 }
 
