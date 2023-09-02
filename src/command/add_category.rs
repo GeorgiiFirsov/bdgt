@@ -33,7 +33,7 @@ impl Command for AddCategory {
             // If multiple categories requested, then ask if one needs to add another one
             //
 
-            multi && Self::needs_another_category()
+            multi && Self::needs_another_category()?
         } { /* Intentionally empty */ } 
 
         Ok(())
@@ -64,11 +64,7 @@ impl AddCategory {
         })
     }
 
-    fn needs_another_category() -> bool {
-        dialoguer::Confirm::new()
-            .with_prompt("Do you want to add another category?")
-            .default(true)
-            .interact()
-            .unwrap()
+    fn needs_another_category() -> Result<bool> {
+        misc::confirm_with_prompt("Do you want to add another category?", true)
     }
 }

@@ -58,3 +58,20 @@ where
 
     Ok(selection)
 }
+
+
+/// Displays confirmation menu with given default selection and prompt.
+/// 
+/// * `prompt` - string to display before input
+/// * `default` - default selection
+pub(crate) fn confirm_with_prompt<S>(prompt: S, default: bool) -> Result<bool>
+where
+    S: Into<String>
+{
+    let confirmation = dialoguer::Confirm::new()
+        .with_prompt(prompt)
+        .default(default)
+        .interact()?;
+
+    Ok(confirmation)
+}
