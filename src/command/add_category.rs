@@ -58,6 +58,7 @@ impl AddCategory {
         let name = misc::input_string_with_prompt("Enter category name")?;
 
         Ok(Category { 
+            id: None,
             name: name, 
             category_type: common::category_type_by_index(selection)?
         })
