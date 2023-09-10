@@ -18,3 +18,10 @@ into DB in encrypted form.
 asks if one want to remove all corresponding transactions too. If one agrees with
 transactions removal, then account will be removed anyway. Otherwise, it will be
 removed if and only if no corresponsing transactions exist.
+
+4. **Adding category**. User provides category type (income/outcome/...) and its name.
+Multiple categories with the same name can be created.
+
+5. **Category removal**. User selects several categories to remove. Category can be
+removed if and only if no transactions with the category exist. Failing to remove
+one category will not break other categories removal.
