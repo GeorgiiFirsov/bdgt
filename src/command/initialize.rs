@@ -2,6 +2,7 @@ use libbdgt::error::Result;
 
 use super::command::{Command, CommandInternal};
 use crate::binding;
+use crate::misc;
 
 
 /// Initialization command. Creates a new storage.
@@ -13,11 +14,11 @@ impl Command for Initialize {
 
     const ABOUT: &'static str = "Initialize storage and use key_id for sensitive data protection";
 
-    const LONG_ABOUT: &'static str = concat!(
-        "This command MUST be invoked before any other command may be run.\n",
-        "Specifier key_id MUST be a valid key identifier for used cryptographic engine.\n",
-        "Key MUST be asymmetric and be suitable for encryption and decryption:\n",
-        "\t- MUST contain private key;\n",
+    const LONG_ABOUT: &'static str = misc::multiline!(
+        "This command MUST be invoked before any other command may be run.",
+        "Specifier key_id MUST be a valid key identifier for used cryptographic engine.",
+        "Key MUST be asymmetric and be suitable for encryption and decryption:",
+        "\t- MUST contain private key;",
         "\t- MUST have encryption key usage."
     );
 
