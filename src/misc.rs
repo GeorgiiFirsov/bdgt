@@ -78,6 +78,25 @@ where
 }
 
 
+/// Reads an `isize` from STDIN with printing a prompt before.
+/// 
+/// Defaults to 0.
+/// 
+/// * `prompt` - string to display before input
+pub(crate) fn input_number_with_prompt<S>(prompt: S) -> Result<isize>
+where
+    S: Into<String>
+{
+    let input = dialoguer::Input::new()
+        .with_prompt(prompt)
+        .with_initial_text("0")
+        .allow_empty(false)
+        .interact_text()?;
+
+    Ok(input)
+}
+
+
 /// Displays selection menu using given items and prompt.
 /// 
 /// * `items` - items to select from
