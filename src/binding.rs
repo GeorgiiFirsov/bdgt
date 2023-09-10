@@ -1,21 +1,26 @@
+use libbdgt::crypto::CryptoEngine;
+use libbdgt::location::Location;
+
+use libbdgt::{budget, crypto, config, storage, location};
 use libbdgt::error::{Result, Error};
-use libbdgt::budget::Budget;
-use libbdgt::config::Config;
-use libbdgt::crypto::{CryptoEngine, GpgCryptoEngine};
-use libbdgt::storage::DbStorage;
-use libbdgt::location::{Location, HomeLocation};
 
 use crate::errors;
 
 
 /// Cryptographic engine type alias for quick engine changes.
-type Engine = GpgCryptoEngine;
+type Engine = crypto::GpgCryptoEngine;
 
 /// Corresponding key identifier type alias.
-type KeyId = <GpgCryptoEngine as CryptoEngine>::KeyId;
+type KeyId = <Engine as CryptoEngine>::KeyId;
 
 /// Storage type alias for quick storage changes.
-type Storage = DbStorage;
+type Storage = storage::DbStorage;
+
+/// Config type alias for quick config changes.
+type Config = config::Config<Engine>;
+
+/// Budget type alias. Instantiation of generic type with concrete parameters.
+pub type Budget = budget::Budget<Engine, Storage>;
 
 
 /// Queries for cryptographic engine information.
@@ -30,12 +35,12 @@ pub(crate) fn query_engine_info() -> Result<(&'static str, &'static str)> {
 /// Performs initialization of the storage.
 /// 
 /// * `key_id` - identifier of a key used to protect data
-pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget<Engine, Storage>> {
+pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget> {
     //
     // Check for storage existence
     //
 
-    let loc = HomeLocation::new();
+    let loc = location::HomeLocation::new();
     if loc.exists() {
         return Err(Error::from_message_with_extra(
             errors::ALREADY_INITIALIZED, loc.root().to_str().unwrap()));
@@ -62,7 +67,7 @@ pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget<Engine, Storage>>
 
 
 /// Opens budget manager with performing of some checks.
-pub(crate) fn open_budget() -> Result<Budget<Engine, Storage>> {
+pub(crate) fn open_budget() -> Result<Budget> {
     let loc = ensure_location()?;
 
     //
@@ -77,8 +82,8 @@ pub(crate) fn open_budget() -> Result<Budget<Engine, Storage>> {
 }
 
 
-fn ensure_location() -> Result<HomeLocation> {
-    let loc = HomeLocation::new();
+fn ensure_location() -> Result<location::HomeLocation> {
+    let loc = location::HomeLocation::new();
     if loc.exists() {
         Ok(loc)
     }
