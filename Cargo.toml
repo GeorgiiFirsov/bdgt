@@ -5,8 +5,7 @@ edition = "2021"
 authors = ["Georgy Firsov <gfirsov007@gmail.com>"]
 repository = "https://github.com/GeorgyFirsov/bdgt"
 homepage = "https://github.com/GeorgyFirsov/bdgt"
-license = "GNU General Public License v3.0"
-license-file = "LICENSE"
+license = "GPL-3.0-only"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
