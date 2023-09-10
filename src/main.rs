@@ -45,6 +45,7 @@ fn run() -> Result<()> {
         command::AddTransaction,
         command::AddCategory,
         command::RemoveCategory,
+        command::About,
     )
 }
 

@@ -18,6 +18,15 @@ type KeyId = <GpgCryptoEngine as CryptoEngine>::KeyId;
 type Storage = DbStorage;
 
 
+/// Queries for cryptographic engine information.
+/// 
+/// Returns engine's name and version.
+pub(crate) fn query_engine_info() -> Result<(&'static str, &'static str)> {
+    let engine = Engine::new()?;
+    Ok((engine.engine(), engine.version()))
+}
+
+
 /// Performs initialization of the storage.
 /// 
 /// * `key_id` - identifier of a key used to protect data
