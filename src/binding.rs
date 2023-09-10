@@ -20,7 +20,8 @@ type Storage = storage::DbStorage;
 type Config = config::Config<Engine>;
 
 /// Budget type alias. Instantiation of generic type with concrete parameters.
-pub type Budget = budget::Budget<Engine, Storage>;
+/// Public for current crate to allow passing as a parameter into functions.
+pub(crate) type Budget = budget::Budget<Engine, Storage>;
 
 
 /// Queries for cryptographic engine information.
