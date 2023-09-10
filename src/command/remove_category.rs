@@ -21,6 +21,14 @@ impl Command for RemoveCategory {
         let budget = binding::open_budget()?;
         let categories = budget.categories()?;
 
+        if categories.is_empty() {
+            //
+            // Returning here, nothing to do for now
+            //
+
+            return Ok(());
+        }
+
         let printable_categories: Vec<_> = categories
             .iter()
             .sorted_by_key(|c| c.category_type)
