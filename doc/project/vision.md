@@ -14,8 +14,7 @@ User must specify an encryption key identifier in engine-specific format.
 user-friendly name and a current balance (defaults to 0). Account information is written
 into DB in encrypted form.
 
-3. **Adding category**
-
-4. **Adding transaction**
-
-5. **Building reports**
+3. **Account removal**. User selects several accounts to remove. For each account app
+asks if one want to remove all corresponding transactions too. If one agrees with
+transactions removal, then account will be removed anyway. Otherwise, it will be
+removed if and only if no corresponsing transactions exist.

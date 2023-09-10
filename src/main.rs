@@ -44,6 +44,7 @@ fn run() -> Result<()> {
         command::Initialize,
         command::AddTransaction,
         command::AddAccount,
+        command::RemoveAccount,
         command::AddCategory,
         command::RemoveCategory,
         command::About,
