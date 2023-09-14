@@ -26,7 +26,7 @@ impl Command for AddTransaction {
 
         while {
             Self::input_transaction(full)
-                .and_then(|(account, transaction)| budget.add_transaction(account, transaction))?;
+                .and_then(|transaction| budget.add_transaction(transaction))?;
 
             //
             // If multiple transactions requested, then ask if one needs to add another one
@@ -53,7 +53,7 @@ impl CommandInternal for AddTransaction {
 
 
 impl AddTransaction {
-    fn input_transaction(full: bool) -> Result<(Id, Transaction)> {
+    fn input_transaction(full: bool) -> Result<Transaction> {
         // TODO
         Err(Error::from_message("not implemented"))
     }
