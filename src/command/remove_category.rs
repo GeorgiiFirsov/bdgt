@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 use libbdgt::error::Result;
 
 use super::command::{Command, CommandInternal};
@@ -31,7 +29,6 @@ impl Command for RemoveCategory {
 
         let printable_categories: Vec<_> = categories
             .iter()
-            .sorted_by_key(|c| c.category_type)
             .map(|c| {
                 format!("{} ({})", c.name, common::category_type_to_string(c.category_type))
             })
