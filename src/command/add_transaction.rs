@@ -1,8 +1,10 @@
-use libbdgt::error::{Result, Error};
+use libbdgt::error::Result;
 use libbdgt::storage::{Transaction, CategoryType, Category, Account};
 
 use super::command::{Command, CommandInternal};
+use super::common;
 use crate::binding;
+use crate::misc;
 
 
 /// Structure with command parameters
@@ -52,14 +54,14 @@ impl Command for AddTransaction {
         };
 
         while {
-            Self::input_transaction(parameters.full, &accounts, &categories, parameters.category_type)
+            Self::input_transaction(parameters.full, &accounts, &categories)
                 .and_then(|transaction| budget.add_transaction(transaction))?;
 
             //
             // If multiple transactions requested, then ask if one needs to add another one
             //
 
-            parameters.multi && Self::needs_another_transaction()
+            parameters.multi && Self::needs_another_transaction()?
         } { /* Intentionally empty */ } 
 
         Ok(())
@@ -93,13 +95,59 @@ impl CommandInternal for AddTransaction {
 
 
 impl AddTransaction {
-    fn input_transaction(full: bool, accounts: &Vec<Account>, categories: &Vec<Category>, category_type: Option<CategoryType>) -> Result<Transaction> {
-        // TODO
-        Err(Error::from_message("not implemented"))
+    fn input_transaction(full: bool, accounts: &Vec<Account>, categories: &Vec<Category>) -> Result<Transaction> {
+        //
+        // Ask for category
+        //
+
+        let printable_categories: Vec<_> = categories
+            .iter()
+            .map(|c| {
+                format!("{} ({})", c.name, common::category_type_to_string(c.category_type))
+            })
+            .collect();
+
+        let selection = misc::select_from_with_prompt(&printable_categories, 
+            "Which category does transaction belong to?")?;
+
+        let category = &categories[selection];
+
+        //
+        // Ask for account
+        //
+
+        let printable_accounts: Vec<_> = accounts
+            .iter()
+            .map(|a| {
+                format!("{}", a.name)
+            })
+            .collect();
+
+        let selection = misc::select_from_with_prompt(&printable_accounts, 
+            "Which account does transaction belong to?")?;
+
+        let account = &accounts[selection];
+
+        //
+        // Ask for description, amount and timestamp if necessary and that's it
+        // Amount will be normalized according to selected category
+        //
+
+        let description = misc::input_string_with_prompt("Description")?;
+        let amount = misc::input_number_with_prompt("Amount")?;
+        let amount = common::normalize_amount_by_category(amount, category.category_type);
+
+        Ok(Transaction {
+            id: None,
+            timestamp: chrono::offset::Utc::now(),
+            description: description,
+            category_id: category.id.unwrap(),
+            account_id: account.id.unwrap(),
+            amount: amount
+        })
     }
 
-    fn needs_another_transaction() -> bool {
-        // TODO
-        false
+    fn needs_another_transaction() -> Result<bool> {
+        misc::confirm_with_prompt("Do you want to add another transaction?", true)
     }
 }

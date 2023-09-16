@@ -31,3 +31,16 @@ pub(crate) fn category_type_to_string(category_type: CategoryType) -> String {
         CategoryType::Outcome => "Outcome".to_owned(),
     }
 }
+
+
+/// Assigns a correct sign to an amount of 
+/// money according to category type.
+/// 
+/// * `amount` - amount of money to normalize
+/// * `category_type` - category type to use for normalization
+pub(crate) fn normalize_amount_by_category(amount: isize, category_type: CategoryType) -> isize {
+    match category_type {
+        CategoryType::Income  => amount.abs(),
+        CategoryType::Outcome => -amount.abs()
+    }
+}
