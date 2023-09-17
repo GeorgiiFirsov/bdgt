@@ -25,3 +25,7 @@ Multiple categories with the same name can be created.
 5. **Category removal**. User selects several categories to remove. Category can be
 removed if and only if no transactions with the category exist. Failing to remove
 one category will not break other categories removal.
+
+6. **Adding transaction**. User selects a category and account, enters description 
+and amount, optionally enters a date and time. Afterwards, correct sign is assigned
+to the amount depending on category. 
