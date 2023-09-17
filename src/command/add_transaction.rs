@@ -137,9 +137,17 @@ impl AddTransaction {
         let amount = misc::input_number_with_prompt("Amount")?;
         let amount = common::normalize_amount_by_category(amount, category.category_type);
 
+        let timestamp = if full {
+            let datetime = misc::input_string_with_prompt("Enter date and time of the transaction")?;
+            dateparser::parse(&datetime)?
+        }
+        else {
+            chrono::Utc::now()
+        };
+
         Ok(Transaction {
             id: None,
-            timestamp: chrono::offset::Utc::now(),
+            timestamp: timestamp,
             description: description,
             category_id: category.id.unwrap(),
             account_id: account.id.unwrap(),
