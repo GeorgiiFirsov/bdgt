@@ -1,9 +1,10 @@
-use libbdgt::error::Result;
+use libbdgt::error::{Result, Error};
 use libbdgt::storage::{Transaction, CategoryType, Category, Account};
 
 use super::command::{Command, CommandInternal};
 use super::common;
 use crate::binding;
+use crate::errors;
 use crate::misc;
 
 
@@ -48,10 +49,19 @@ impl Command for AddTransaction {
         let budget = binding::open_budget()?;
 
         let accounts = budget.accounts()?;
+
+        if accounts.is_empty() {
+            return Err(Error::from_message(errors::NO_ACCOUNTS));
+        }
+
         let categories = match parameters.category_type {
             Some(category_type) => budget.categories_of(category_type)?,
             None => budget.categories()?
         };
+
+        if categories.is_empty() {
+            return Err(Error::from_message(errors::NO_CATEGORIES));
+        }
 
         while {
             Self::input_transaction(parameters.full, &accounts, &categories)
