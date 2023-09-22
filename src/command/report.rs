@@ -16,17 +16,6 @@ impl Command for Report {
 
     fn add_args(command: clap::Command) -> clap::Command {
         command
-            .arg(
-                clap::arg!(--accounts "summary information for all accounts")
-                    .conflicts_with_all(["account"])
-            )
-            .arg(
-                clap::arg!(-a --account [account_id] "summary information for a chosen account")
-                    .conflicts_with_all(["accounts"])
-            )
-            .arg(
-                clap::arg!(--categories "summary information for all ca")
-            )
     }
 
     fn invoke(_matches: &clap::ArgMatches) -> Result<()> {
