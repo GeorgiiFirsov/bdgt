@@ -12,6 +12,7 @@ mod add_category;
 mod add_plan;
 mod remove_account;
 mod remove_category;
+mod remove_plan;
 mod about;
 
 
@@ -24,4 +25,5 @@ pub(crate) use self::add_category::AddCategory;
 pub(crate) use self::add_plan::AddPlan;
 pub(crate) use self::remove_account::RemoveAccount;
 pub(crate) use self::remove_category::RemoveCategory;
+pub(crate) use self::remove_plan::RemovePlan;
 pub(crate) use self::about::About;

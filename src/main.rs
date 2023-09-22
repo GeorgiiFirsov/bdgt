@@ -50,6 +50,7 @@ fn run() -> Result<()> {
         command::AddPlan,
         command::RemoveAccount,
         command::RemoveCategory,
+        command::RemovePlan,
         command::About,
     )
 }
