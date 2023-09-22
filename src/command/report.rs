@@ -1,8 +1,6 @@
 use libbdgt::error::Result;
 
 use super::command::{Command, CommandInternal};
-use crate::binding;
-use crate::misc;
 
 
 /// Command for showing application's info.
