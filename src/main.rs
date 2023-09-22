@@ -44,6 +44,7 @@ fn run() -> Result<()> {
 
     handle_commands!(
         command::Initialize,
+        command::Report,
         command::AddTransaction,
         command::AddAccount,
         command::AddCategory,
