@@ -112,8 +112,8 @@ impl AddTransaction {
 
         let printable_categories: Vec<_> = categories
             .iter()
-            .map(|c| {
-                format!("{} ({})", c.name, common::category_type_to_string(c.category_type))
+            .map(|category| {
+                format!("{} ({})", category.name, common::category_type_to_string(category.category_type))
             })
             .collect();
 
@@ -128,8 +128,8 @@ impl AddTransaction {
 
         let printable_accounts: Vec<_> = accounts
             .iter()
-            .map(|a| {
-                format!("{}", a.name)
+            .map(|account| {
+                format!("{}", account.name)
             })
             .collect();
 

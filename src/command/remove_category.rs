@@ -29,8 +29,8 @@ impl Command for RemoveCategory {
 
         let printable_categories: Vec<_> = categories
             .iter()
-            .map(|c| {
-                format!("{} ({})", c.name, common::category_type_to_string(c.category_type))
+            .map(|category| {
+                format!("{} ({})", category.name, common::category_type_to_string(category.category_type))
             })
             .collect();
 
