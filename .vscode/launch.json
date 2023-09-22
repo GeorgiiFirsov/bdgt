@@ -20,7 +20,7 @@
                 }
             },
             // Just some key identifier here
-            "args": ["fill-key-id"],
+            "args": ["init", "fill-key-id"],
             "cwd": "${workspaceFolder}"
         },
         {
