@@ -144,7 +144,7 @@ impl AddTransaction {
         //
 
         let description = misc::input_string_with_prompt("Description")?;
-        let amount = misc::input_number_with_prompt("Amount")?;
+        let amount = misc::input_number_with_prompt("Amount (sign will be selected based on category)")?;
         let amount = common::normalize_amount_by_category(amount, category.category_type);
 
         let timestamp = if full {
