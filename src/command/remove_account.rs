@@ -28,7 +28,7 @@ impl Command for RemoveAccount {
 
         let printable_accounts: Vec<_> = accounts
             .iter()
-            .map(|account| account.name.as_str())
+            .map(|account| &account.name)
             .collect();
 
         let selection = misc::select_multiple_from_with_prompt(
