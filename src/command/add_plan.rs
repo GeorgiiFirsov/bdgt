@@ -3,9 +3,9 @@ use libbdgt::storage::{Plan, Category, CategoryType};
 
 use super::command::{Command, CommandInternal};
 use super::common;
+use crate::console;
 use crate::binding;
 use crate::errors;
-use crate::misc;
 
 
 /// Plan addition command. Adds a new plan(s) in interactive mode.
@@ -74,7 +74,7 @@ impl AddPlan {
             })
             .collect();
 
-        let selection = misc::select_from_with_prompt(&printable_categories, 
+        let selection = console::select_from_with_prompt(&printable_categories, 
             "Which category does plan belong to?")?;
 
         let category = &categories[selection];
@@ -84,8 +84,8 @@ impl AddPlan {
         // If it doesn't, then I just negate the value.
         //
 
-        let name = misc::input_string_with_prompt("Plan name")?;
-        let amount_limit = misc::input_number_with_prompt("Amount limit (a negative value will be negated)")
+        let name = console::input_string_with_prompt("Plan name")?;
+        let amount_limit = console::input_number_with_prompt("Amount limit (a negative value will be negated)")
             .map(isize::abs)?;
 
         Ok(Plan {
@@ -97,6 +97,6 @@ impl AddPlan {
     }
 
     fn needs_another_plan() -> Result<bool> {
-        misc::confirm_with_prompt("Do you want to add another plan?", true)
+        console::confirm_with_prompt("Do you want to add another plan?", true)
     }
 }

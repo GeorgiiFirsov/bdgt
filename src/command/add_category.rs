@@ -3,8 +3,8 @@ use libbdgt::storage::Category;
 
 use super::command::{Command, CommandInternal};
 use super::common;
+use crate::console;
 use crate::binding;
-use crate::misc;
 
 
 /// Category addition command. Adds a new category in interactive mode.
@@ -52,10 +52,10 @@ impl CommandInternal for AddCategory {
 
 impl AddCategory {
     fn input_category() -> Result<Category> {
-        let selection = misc::select_from_with_prompt(&common::category_types(), 
+        let selection = console::select_from_with_prompt(&common::category_types(), 
             "Select what type of category you want")?;
             
-        let name = misc::input_string_with_prompt("Enter category name")?;
+        let name = console::input_string_with_prompt("Enter category name")?;
 
         Ok(Category { 
             id: None,
@@ -65,6 +65,6 @@ impl AddCategory {
     }
 
     fn needs_another_category() -> Result<bool> {
-        misc::confirm_with_prompt("Do you want to add another category?", true)
+        console::confirm_with_prompt("Do you want to add another category?", true)
     }
 }

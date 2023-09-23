@@ -2,8 +2,8 @@ use libbdgt::error::Result;
 use libbdgt::storage::Account;
 
 use super::command::{Command, CommandInternal};
+use crate::console;
 use crate::binding;
-use crate::misc;
 
 
 /// Account addition command. Adds a new account in interactive mode.
@@ -51,8 +51,8 @@ impl CommandInternal for AddAccount {
 
 impl AddAccount {
     fn input_account() -> Result<Account> {
-        let name = misc::input_string_with_prompt("Enter account name")?;
-        let balance = misc::input_number_with_prompt("Enter initial balance")?;
+        let name = console::input_string_with_prompt("Enter account name")?;
+        let balance = console::input_number_with_prompt("Enter initial balance")?;
 
         Ok(Account { 
             id: None,
@@ -62,6 +62,6 @@ impl AddAccount {
     }
 
     fn needs_another_account() -> Result<bool> {
-        misc::confirm_with_prompt("Do you want to add another account?", true)
+        console::confirm_with_prompt("Do you want to add another account?", true)
     }
 }

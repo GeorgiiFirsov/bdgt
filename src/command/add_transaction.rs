@@ -3,9 +3,9 @@ use libbdgt::storage::{Transaction, CategoryType, Category, Account};
 
 use super::command::{Command, CommandInternal};
 use super::common;
+use crate::console;
 use crate::binding;
 use crate::errors;
-use crate::misc;
 
 
 /// Structure with command parameters
@@ -117,7 +117,7 @@ impl AddTransaction {
             })
             .collect();
 
-        let selection = misc::select_from_with_prompt(&printable_categories, 
+        let selection = console::select_from_with_prompt(&printable_categories, 
             "Which category does transaction belong to?")?;
 
         let category = &categories[selection];
@@ -133,7 +133,7 @@ impl AddTransaction {
             })
             .collect();
 
-        let selection = misc::select_from_with_prompt(&printable_accounts, 
+        let selection = console::select_from_with_prompt(&printable_accounts, 
             "Which account does transaction belong to?")?;
 
         let account = &accounts[selection];
@@ -143,12 +143,12 @@ impl AddTransaction {
         // Amount will be normalized according to selected category
         //
 
-        let description = misc::input_string_with_prompt("Description")?;
-        let amount = misc::input_number_with_prompt("Amount (sign will be selected based on category)")?;
+        let description = console::input_string_with_prompt("Description")?;
+        let amount = console::input_number_with_prompt("Amount (sign will be selected based on category)")?;
         let amount = common::normalize_amount_by_category(amount, category.category_type);
 
         let timestamp = if full {
-            let datetime = misc::input_string_with_prompt("Enter date and time of the transaction")?;
+            let datetime = console::input_string_with_prompt("Enter date and time of the transaction")?;
             dateparser::parse(&datetime)?
         }
         else {
@@ -166,6 +166,6 @@ impl AddTransaction {
     }
 
     fn needs_another_transaction() -> Result<bool> {
-        misc::confirm_with_prompt("Do you want to add another transaction?", true)
+        console::confirm_with_prompt("Do you want to add another transaction?", true)
     }
 }

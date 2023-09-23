@@ -1,9 +1,9 @@
 use libbdgt::error::Result;
 
 use super::command::{Command, CommandInternal};
-use crate::binding;
 use super::common;
-use crate::misc;
+use crate::console;
+use crate::binding;
 
 
 /// Category removal command. Displays multiselect control and then removes selected categories.
@@ -34,7 +34,7 @@ impl Command for RemoveCategory {
             })
             .collect();
 
-        let selection = misc::select_multiple_from_with_prompt(
+        let selection = console::select_multiple_from_with_prompt(
             &printable_categories, "Select categories to remove")?;
 
         for idx in selection {

@@ -1,8 +1,8 @@
 use libbdgt::error::Result;
 
 use super::command::{Command, CommandInternal};
+use crate::console;
 use crate::binding;
-use crate::misc;
 
 
 /// Plan removal command. Displays multiselect control and then removes selected plans.
@@ -31,7 +31,7 @@ impl Command for RemovePlan {
             .map(|plan| &plan.name)
             .collect();
 
-        let selection = misc::select_multiple_from_with_prompt(
+        let selection = console::select_multiple_from_with_prompt(
             &printable_plans, "Select plans to remove")?;
 
         for idx in selection {

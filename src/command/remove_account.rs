@@ -1,8 +1,8 @@
 use libbdgt::error::Result;
 
 use super::command::{Command, CommandInternal};
+use crate::console;
 use crate::binding;
-use crate::misc;
 
 
 /// Account removal command. Displays multiselect control and then removes selected accounts.
@@ -31,12 +31,12 @@ impl Command for RemoveAccount {
             .map(|account| &account.name)
             .collect();
 
-        let selection = misc::select_multiple_from_with_prompt(
+        let selection = console::select_multiple_from_with_prompt(
             &printable_accounts, "Select accounts to remove")?;
 
         for idx in selection {
             let account = &accounts[idx];
-            let force = misc::confirm_with_prompt(
+            let force = console::confirm_with_prompt(
                 "Remove account with all corresponding transactions?", false)?;
 
             match budget.remove_account(account.id.unwrap(), force) {

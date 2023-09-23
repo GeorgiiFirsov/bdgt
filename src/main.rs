@@ -5,6 +5,7 @@ extern crate libbdgt;
 extern crate chrono;
 extern crate clap;
 
+mod console;
 mod command;
 mod binding;
 mod errors;
