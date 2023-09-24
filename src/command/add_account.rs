@@ -1,7 +1,7 @@
-use libbdgt::error::Result;
 use libbdgt::storage::Account;
 
 use super::command::{Command, CommandInternal};
+use crate::error::Result;
 use crate::console;
 use crate::binding;
 
@@ -25,8 +25,7 @@ impl Command for AddAccount {
         let budget = binding::open_budget()?;
 
         while {
-            Self::input_account()
-                .and_then(|account| budget.add_account(account))?;
+            budget.add_account(Self::input_account()?)?;
 
             //
             // If multiple accounts requested, then ask if one needs to add another one

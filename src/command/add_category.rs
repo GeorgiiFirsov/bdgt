@@ -1,8 +1,8 @@
-use libbdgt::error::Result;
 use libbdgt::storage::Category;
 
 use super::command::{Command, CommandInternal};
 use super::common;
+use crate::error::Result;
 use crate::console;
 use crate::binding;
 
@@ -26,8 +26,7 @@ impl Command for AddCategory {
         let budget = binding::open_budget()?;
 
         while {
-            Self::input_category()
-                .and_then(|category| budget.add_category(category))?;
+            budget.add_category(Self::input_category()?)?;
 
             //
             // If multiple categories requested, then ask if one needs to add another one

@@ -1,6 +1,5 @@
-use libbdgt::error::Result;
-
 use super::command::{Command, CommandInternal};
+use crate::error::Result;
 use crate::binding;
 use crate::misc;
 

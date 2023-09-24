@@ -1,8 +1,9 @@
-use libbdgt::error::{Result, Error};
+
 use libbdgt::storage::{Transaction, CategoryType, Category, Account};
 
 use super::command::{Command, CommandInternal};
 use super::common;
+use crate::error::{Result, Error};
 use crate::console;
 use crate::binding;
 use crate::errors;
@@ -64,8 +65,7 @@ impl Command for AddTransaction {
         }
 
         while {
-            Self::input_transaction(parameters.full, &accounts, &categories)
-                .and_then(|transaction| budget.add_transaction(transaction))?;
+            budget.add_transaction(Self::input_transaction(parameters.full, &accounts, &categories)?)?;
 
             //
             // If multiple transactions requested, then ask if one needs to add another one

@@ -13,6 +13,7 @@ license = "GPL-3.0-only"
 dateparser = "0.2.0"
 dialoguer = "0.10.4"
 itertools = "0.11.0"
+anyhow = "1.0.75"
 chrono = "0.4.26"
 clap = { version = "4.4.0", features = ["cargo"] }
 

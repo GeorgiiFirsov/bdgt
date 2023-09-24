@@ -1,8 +1,8 @@
-use libbdgt::error::{Result, Error};
 use libbdgt::storage::{Plan, Category, CategoryType};
 
 use super::command::{Command, CommandInternal};
 use super::common;
+use crate::error::{Result, Error};
 use crate::console;
 use crate::binding;
 use crate::errors;
@@ -37,8 +37,7 @@ impl Command for AddPlan {
         }
 
         while {
-            Self::input_plan(&categories)
-                .and_then(|plan| budget.add_plan(plan))?;
+            budget.add_plan(Self::input_plan(&categories)?)?;
 
             //
             // If multiple plans requested, then ask if one needs to add another one

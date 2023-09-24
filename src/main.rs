@@ -2,6 +2,7 @@ extern crate dateparser;
 extern crate dialoguer;
 extern crate itertools;
 extern crate libbdgt;
+extern crate anyhow;
 extern crate chrono;
 extern crate clap;
 
@@ -9,12 +10,12 @@ mod console;
 mod command;
 mod binding;
 mod errors;
+mod error;
 mod misc;
 
 
-use libbdgt::error::Result;
-
 use command::Command;
+use error::Result;
 
 
 /// Macro, that simplifies working with commands.

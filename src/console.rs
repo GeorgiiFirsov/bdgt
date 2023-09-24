@@ -1,4 +1,4 @@
-use libbdgt::error::Result;
+use crate::error::Result;
 
 
 /// Reads a string from STDIN with printing a prompt before.
