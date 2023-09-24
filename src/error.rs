@@ -76,3 +76,11 @@ impl From<anyhow::Error> for Error {
         Error(libbdgt::error::Error::from_message(msg))
     }
 }
+
+
+impl From<dialoguer::Error> for Error {
+    fn from(value: dialoguer::Error) -> Self {
+        let msg = value.to_string();
+        Error(libbdgt::error::Error::from_message(msg))
+    }
+}
