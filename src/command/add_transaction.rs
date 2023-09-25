@@ -9,15 +9,15 @@ use crate::binding;
 use crate::errors;
 
 
-/// Structure with command parameters
+/// Structure with command parameters.
 pub(crate) struct Parameters {
-    /// Input multiple transactions in a row 
+    /// Input multiple transactions in a row.
     multi: bool,
 
-    /// Input all trasaction fields
+    /// Input all trasaction fields.
     full: bool,
 
-    /// Input transaction of specific category
+    /// Input transaction of specific category.
     category_type: Option<CategoryType>,
 }
 
