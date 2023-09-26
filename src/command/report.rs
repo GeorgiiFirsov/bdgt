@@ -1,19 +1,13 @@
+use libbdgt::storage::Timestamp;
+
 use super::command::{Command, CommandInternal};
-use crate::error::Result;
+use crate::error::{Result, Error};
+use crate::errors;
 use crate::misc;
 
 
-/// Type of report.
-pub(crate) enum ReportType {
-    /// Build report for account(s).
-    Accounts,
-
-    /// Build report for category(s).
-    Categories,
-
-    /// Build report for plan(s).
-    Plans,
-}
+///
+type Interval = (Timestamp, Timestamp);
 
 
 /// Structure with command parameters.
@@ -26,9 +20,6 @@ pub(crate) struct Parameters {
 
     /// Month to build report for.
     month: i8,
-
-    /// Type of report to build.
-    report_type: ReportType,
 }
 
 
@@ -43,12 +34,15 @@ impl Command for Report {
 
     fn add_args(command: clap::Command) -> clap::Command {
         command
-            .arg(clap::arg!(-e --epoch "build report for he whole period of time"))
+            .arg(
+                clap::arg!(-e --epoch "build report for he whole period of time")
+                    .conflicts_with_all(["month", "year"])
+            )
             .arg(
                 clap::arg!(-m --month [MONTH] "month to build report for (defaults to current month)")
                     .conflicts_with("epoch")
                     .default_value("0")
-                    .value_parser(clap::value_parser!(i8))
+                    .value_parser(clap::value_parser!(i8).range(-1..=12))
                     .allow_negative_numbers(true)
                     .long_help(misc::multiline!(
                         "Possible values for MONTH parameter: [-1 .. 12].",
@@ -61,7 +55,7 @@ impl Command for Report {
                 clap::arg!(-y --year [YEAR] "year to build report for (defaults to current year)")
                     .conflicts_with("epoch")
                     .default_value("0")
-                    .value_parser(clap::value_parser!(i16))
+                    .value_parser(clap::value_parser!(i16).range(-1..))
                     .allow_negative_numbers(true)
                     .long_help(misc::multiline!(
                         "Possible values for YEAR parameter: -1, 0 or just a year.",
@@ -73,7 +67,8 @@ impl Command for Report {
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
         let parameters = Self::parse_args(matches)?;
-        println!("{}, {}, {}", parameters.epoch, parameters.year, parameters.month);
+        let _interval = Self::time_interval(&parameters)?;
+        println!("{}, {:?}, {:?}", parameters.epoch, parameters.year, parameters.month);
 
         Ok(())
     }
@@ -92,7 +87,49 @@ impl CommandInternal for Report {
             epoch: epoch, 
             year: year, 
             month: month,
-            report_type: ReportType::Accounts // TODO
         })
+    }
+}
+
+
+impl Report {
+    fn time_interval(parameters: &Parameters) -> Result<Option<Interval>> {
+        if parameters.epoch {
+            return Ok(None);
+        }
+
+        //
+        // Time interval parameters are parsed according to the 
+        // following table:
+        //
+        // +------+------+--------+------------------------------------------+
+        // | Case | Year |  Month | Result                                   |
+        // +------+------+--------+------------------------------------------+
+        // |    1 |   -1 | 1 - 12 | Report for specific month, last year     |
+        // |    2 |   -1 |      0 | Report for last year                     |
+        // |    3 |   -1 |     -1 | Not supported                            |
+        // |    4 |    0 | 1 - 12 | Report for specific month, current year  |
+        // |    5 |    0 |      0 | Report for current month                 |
+        // |    6 |    0 |     -1 | Report for previous month                |
+        // |    7 |  any | 1 - 12 | Report for specific month, specific year |
+        // |    8 |  any |      0 | Report for specific year                 |
+        // |    9 |  any |     -1 | Not supported                            |
+        // +------+------+--------+------------------------------------------+
+        //
+        // Report for current year can be obtained by providing the 
+        // year explicitly.
+        //
+
+        let (month, year) = (parameters.month, parameters.year);
+
+        if month == -1 && year != 0 {
+            //
+            // Cases 3 and 9
+            //
+
+            return Err(Error::from_message(errors::INVALID_INTERVAL));
+        }
+
+        Ok(None)  // TODO
     }
 }
