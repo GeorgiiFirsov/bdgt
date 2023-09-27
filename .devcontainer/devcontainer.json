@@ -1,19 +1,36 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/rust-postgres
+// README at: https://github.com/devcontainers/templates/tree/main/src/rust
 {
-	"name": "Rust and PostgreSQL",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+	"name": "Rust",
+	"build": {
+        // Path is relative to the devcontainer.json file.
+        "dockerfile": "Dockerfile"
+    },
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"features": {
+		"ghcr.io/devcontainers/features/rust:1": {
+			"version": "latest",
+			"profile": "minimal"
+		}
+	}
+
+	// Use 'mounts' to make the cargo cache persistent in a Docker Volume.
+	// "mounts": [
+	// 	{
+	// 		"source": "devcontainer-cargo-cache-${devcontainerId}",
+	// 		"target": "/usr/local/cargo",
+	// 		"type": "volume"
+	// 	}
+	// ]
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [5432],
+	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "",
+	// "postCreateCommand": "rustc --version",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
