@@ -64,6 +64,14 @@ impl Command for Report {
                         " - Negative one denotes the previous year",
                     ))
             )
+            .arg(
+                clap::arg!(-a --account <ACCOUNT> "build report for specified account")
+                    .conflicts_with_all(["accounts"])
+            )
+            .arg(
+                clap::arg!(--accounts "build report for all accounts (this is default option)")
+                    .conflicts_with_all(["account"])
+            )
     }
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
