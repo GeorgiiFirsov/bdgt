@@ -18,3 +18,6 @@ pub(crate) const NO_CATEGORIES: &str = "No categories exist yet";
 
 /// Invalid time interval specified.
 pub(crate) const INVALID_INTERVAL: &str = "Invalid time interval specified";
+
+///
+pub(crate) const INVALID_DATE: &str = "Invalid date specified";

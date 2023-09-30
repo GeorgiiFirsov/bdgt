@@ -6,6 +6,7 @@ extern crate anyhow;
 extern crate chrono;
 extern crate clap;
 
+mod timestamp;
 mod console;
 mod command;
 mod binding;

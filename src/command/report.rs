@@ -2,11 +2,12 @@ use libbdgt::storage::Timestamp;
 
 use super::command::{Command, CommandInternal};
 use crate::error::{Result, Error};
+use crate::timestamp;
 use crate::errors;
 use crate::misc;
 
 
-///
+/// Time interval [start, end)
 type Interval = (Timestamp, Timestamp);
 
 
@@ -16,10 +17,10 @@ pub(crate) struct Parameters {
     epoch: bool,
 
     /// Year to build report for.
-    year: i16,
+    year: i32,
 
     /// Month to build report for.
-    month: i8,
+    month: i32,
 }
 
 
@@ -42,7 +43,7 @@ impl Command for Report {
                 clap::arg!(-m --month [MONTH] "month to build report for (defaults to current month)")
                     .conflicts_with("epoch")
                     .default_value("0")
-                    .value_parser(clap::value_parser!(i8).range(-1..=12))
+                    .value_parser(clap::value_parser!(i32).range(-1..=12))
                     .allow_negative_numbers(true)
                     .long_help(misc::multiline!(
                         "Possible values for MONTH parameter: [-1 .. 12].",
@@ -55,7 +56,7 @@ impl Command for Report {
                 clap::arg!(-y --year [YEAR] "year to build report for (defaults to current year)")
                     .conflicts_with("epoch")
                     .default_value("0")
-                    .value_parser(clap::value_parser!(i16).range(-1..))
+                    .value_parser(clap::value_parser!(i32).range(-1..))
                     .allow_negative_numbers(true)
                     .long_help(misc::multiline!(
                         "Possible values for YEAR parameter: -1, 0 or just a year.",
@@ -67,8 +68,8 @@ impl Command for Report {
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
         let parameters = Self::parse_args(matches)?;
-        let _interval = Self::time_interval(&parameters)?;
-        println!("{}, {:?}, {:?}", parameters.epoch, parameters.year, parameters.month);
+        let interval = Self::time_interval(&parameters)?;
+        println!("{:?}", interval);
 
         Ok(())
     }
@@ -121,7 +122,7 @@ impl Report {
         //
 
         let (month, year) = (parameters.month, parameters.year);
-
+        
         if month == -1 && year != 0 {
             //
             // Cases 3 and 9
@@ -130,6 +131,30 @@ impl Report {
             return Err(Error::from_message(errors::INVALID_INTERVAL));
         }
 
-        Ok(None)  // TODO
+        let duration = match (month, year) {
+            (0, y) if y != 0 => {
+                //
+                // Case 2 and case 8
+                //
+
+                timestamp::Duration::Year(1)
+            },
+            _ => {
+                //
+                // Rest cases
+                //
+
+                timestamp::Duration::Month(1)
+            }
+        };
+
+        let start = timestamp::make_date(
+            timestamp::absolute_year(year), 
+            timestamp::absolute_month(month), 
+            1)?;
+
+        let end = timestamp::advance_date(&start, duration)?;
+
+        Ok(Some((start, end)))
     }
 }
