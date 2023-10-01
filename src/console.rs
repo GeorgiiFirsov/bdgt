@@ -26,6 +26,17 @@ impl WritePaged for prettytable::Table {
 }
 
 
+/// Implementation of [`WritePaged`] for [`String`]. The function
+/// preserves styles set with help of [`colored`] crate.
+impl WritePaged for String {
+    fn write_paged(&self, pager: &mut minus::Pager) -> Result<()> {
+        pager.write_str(&self)?;
+
+        Ok(())
+    }
+}
+
+
 /// Reads a string from STDIN with printing a prompt before.
 /// 
 /// * `prompt` - string to display before input
