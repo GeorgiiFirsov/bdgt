@@ -1,4 +1,9 @@
-use libbdgt::storage::{Account, Timestamp, Id};
+use std::collections::HashMap;
+use std::fmt::Write;
+
+use libbdgt::storage::{Account, Timestamp, Id, Category};
+
+use colored::Colorize;
 
 use super::command::{Command, CommandInternal};
 use crate::error::{Result, Error};
@@ -13,8 +18,12 @@ use crate::misc;
 type Interval = (Timestamp, Timestamp);
 
 
-/// Type of report table, that will be printed.
+/// Type of table, that contains a report data.
 type ReportTable = prettytable::Table;
+
+
+/// Type of report, that will be printed.
+type PrintableReport = (String, ReportTable);
 
 
 /// Target for a report.
@@ -123,8 +132,11 @@ impl Command for Report {
 
         let mut pager = minus::Pager::new();
 
-        for report in reports {
-            report.write_paged(&mut pager)?;
+        for (preamble, table) in reports {
+            preamble.write_paged(&mut pager)?;
+            table.write_paged(&mut pager)?;
+
+            pager.write_str("\n")?;
         }
 
         minus::page_all(pager)?;
@@ -162,16 +174,118 @@ impl Report {
 
 
 impl Report {
-    fn build_account_reports(budget: binding::Budget, interval: Option<Interval>, account: Option<Id>) -> Result<Vec<ReportTable>> {
+    fn build_account_reports(budget: binding::Budget, interval: Option<Interval>, account: Option<Id>) -> Result<Vec<PrintableReport>> {
+        //
+        // Query for account(s) data
+        //
+
+        let accounts = match account {
+            Some(account) => vec![budget.account(account)?],
+            None => budget.accounts()?
+        };
+
+        //
+        // Get categories and convert them into HashMap
+        //
+
+        let categories = budget.categories()?;
+        let categories = categories
+            .into_iter()
+            .map(|category| (category.id.unwrap(), category))
+            .collect();
+
+        //
+        // Let's build reports here!
+        //
+
+        let mut reports = Vec::new();
+        for account in accounts {
+            reports.push(Self::build_account_report(&budget, &interval, &account, &categories)?)
+        }
+
+        Ok(reports)
+    }
+
+    fn build_account_report(budget: &binding::Budget, interval: &Option<Interval>, account: &Account, categories: &HashMap<Id, Category>) -> Result<PrintableReport> {
+        let preamble = format!("Account: {}\nIdentifier: {}\nCurrent balance: {}\n",
+            account.name, account.id.unwrap(), Self::colorize_amount(account.balance));
+        
+        //
+        // Query for transactions, that correspond to the account
+        //
+
+        let transactions = match interval {
+            Some((start_timestamp, end_timestamp)) => {
+                budget.transactions_of_between(account.id.unwrap(), *start_timestamp, *end_timestamp)?
+            },
+            None => {
+                budget.transactions_of(account.id.unwrap())?
+            }
+        };
+
+        //
+        // Now let's build a report
+        //
+
+        let mut table = Self::create_report_table();
+        table.set_titles(prettytable::row!["Description", "Amount", "Date and time", "Category"]);
+
+        for transaction in transactions {
+            table.add_row(prettytable::row![
+                transaction.description, 
+                Self::colorize_amount(transaction.amount), 
+                transaction.timestamp.to_rfc2822(),
+                categories.get(&transaction.category_id).unwrap().name
+            ]);
+        }
+
+        Ok((preamble, table))
+    }
+
+    fn build_category_reports(budget: binding::Budget, interval: Option<Interval>, category: Option<Id>) -> Result<Vec<PrintableReport>> {
         Ok(Vec::new())  // TODO
     }
 
-    fn build_category_reports(budget: binding::Budget, interval: Option<Interval>, category: Option<Id>) -> Result<Vec<ReportTable>> {
+    fn build_plan_reports(budget: binding::Budget, interval: Option<Interval>, plan: Option<Id>) -> Result<Vec<PrintableReport>> {
         Ok(Vec::new())  // TODO
     }
 
-    fn build_plan_reports(budget: binding::Budget, interval: Option<Interval>, plan: Option<Id>) -> Result<Vec<ReportTable>> {
-        Ok(Vec::new())  // TODO
+    fn colorize_amount(amount: isize) -> colored::ColoredString {
+        let result = amount.to_string()
+            .bold();
+
+        match amount {
+            v if v < 0 => result.red(),
+            0 => result.yellow(),
+            _ => result.green()
+        }
+    }
+
+    fn create_report_table() -> ReportTable {
+        use prettytable::format;
+
+        let format = format::FormatBuilder::new()
+            .column_separator('│')
+            .borders('│')
+            .separator(
+                format::LinePosition::Top, 
+                format::LineSeparator::new('─', '┬', '┌', '┐')
+            )
+            .separator(
+                format::LinePosition::Title, 
+                format::LineSeparator::new('─', '┼', '├', '┤')
+            )
+            .separator(
+                format::LinePosition::Bottom, 
+                format::LineSeparator::new('─', '┴', '└', '┘')
+            )
+            .padding(1, 1)
+            .build();
+
+        let mut table = ReportTable::new();
+        table.set_format(format);
+
+        table
     }
 }
 
