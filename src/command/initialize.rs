@@ -38,13 +38,13 @@ impl Command for Initialize {
         //
 
         println!(misc::multiline!(
-                "Using {} engine of version {}",
+                "Cryptographic engine: {} ({})",
+                "Local instance identifier: {}",
                 "Encryption key identifier: {}",
-                "Local instance identifier: {}"
             ),
             budget.engine(), budget.engine_version(), 
-            key_id, 
-            budget.instance_id()
+            budget.instance_id(),
+            budget.key_id()
         );
 
         Ok(())
