@@ -37,8 +37,15 @@ impl Command for Initialize {
         // Just to be nice -- print some information
         //
 
-        println!("Using {} engine of version {}", budget.engine(), budget.engine_version());
-        println!("Encryption key identifier: {}", key_id);
+        println!(misc::multiline!(
+                "Using {} engine of version {}",
+                "Encryption key identifier: {}",
+                "Local instance identifier: {}"
+            ),
+            budget.engine(), budget.engine_version(), 
+            key_id, 
+            budget.instance_id()
+        );
 
         Ok(())
     }

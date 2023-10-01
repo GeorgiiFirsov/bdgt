@@ -15,7 +15,7 @@ impl Command for About {
 
     fn invoke(_matches: &clap::ArgMatches) -> Result<()> {
         //
-        // Collect info about application from some sources
+        // Collect info about application. This information is always available.
         //
 
         let app = env!("CARGO_PKG_NAME");
@@ -30,19 +30,34 @@ impl Command for About {
         //
 
         println!(misc::multiline!(
-            "{} {}",                            // App name and version
-            "Authors: {}",                      // List of application's authors
-            "Home page: {}",                    // Home page of the application
-            "",
-            "Cryptographic engine: {} ({})",    // Cryptographic engine information
-            "",
-            "Distributed under {}",             // License information
-        ), 
-        app, version, 
-        authors,
-        homepage,
-        engine_info.0, engine_info.1,
-        license);
+                "{} {}",                            // App name and version
+                "Authors: {}",                      // List of application's authors
+                "Home page: {}",                    // Home page of the application
+                "Distributed under {}",             // License information
+                "",
+                "Cryptographic engine: {} ({})",    // Cryptographic engine information
+            ), 
+            app, version, 
+            authors,
+            homepage,
+            license,
+            engine_info.0, engine_info.1
+        );
+
+        //
+        // Now if local instance is initialized, I need to display some
+        // information about it too
+        //
+
+        if let Ok(budget) = binding::open_budget() {
+            println!(misc::multiline!(
+                    "Local instance identifier: {}",
+                    "Encryption key identifier: {}"
+                ),
+                budget.instance_id(), 
+                budget.key_id()
+            );
+        }
 
         Ok(())
     }
