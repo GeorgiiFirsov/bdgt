@@ -97,6 +97,7 @@ impl Command for Report {
             )
             .arg(
                 clap::arg!(-a --account <ACCOUNT> "build report for specified account")
+                    .value_parser(clap::value_parser!(usize))
                     .conflicts_with_all(["accounts"])
             )
             .arg(
@@ -167,8 +168,20 @@ impl CommandInternal for Report {
 
 
 impl Report {
-    fn get_target(_matches: &clap::ArgMatches) -> Result<ReportTarget> {
-        Ok(ReportTarget::Account(None))  // TODO
+    fn get_target(matches: &clap::ArgMatches) -> Result<ReportTarget> {
+        if Self::get_one(matches, "accounts")? {
+            return Ok(ReportTarget::Account(None));
+        }
+
+        if let Some(account) = Self::get_one_opt(matches, "account") {
+            return Ok(ReportTarget::Account(Some(account)));
+        }
+
+        //
+        // By default, report is built for all accounts
+        //
+
+        Ok(ReportTarget::Account(None))
     }
 }
 

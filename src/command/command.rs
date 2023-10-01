@@ -62,8 +62,19 @@ pub(crate) trait CommandInternal {
     where
         T: ToOwned<Owned = T> + Clone + Send + Sync + 'static
     {
+        Self::get_one_opt::<T>(matches, name)
+            .ok_or(Error::from_message_with_extra(errors::PARSE_ERROR, name))
+    }
+
+    /// Parses single optional value for a given argument.
+    /// 
+    /// * `matches` - set of provided arguments to parse
+    /// * `name` - name of an argument to parse value for
+    fn get_one_opt<T>(matches: &clap::ArgMatches, name: &str) -> Option<T>
+    where
+        T: ToOwned<Owned = T> + Clone + Send + Sync + 'static
+    {
         matches.get_one::<T>(name)
             .map(T::to_owned)
-            .ok_or(Error::from_message_with_extra(errors::PARSE_ERROR, name))
     }
 }
