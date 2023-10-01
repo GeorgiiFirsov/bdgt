@@ -1,4 +1,3 @@
-
 use libbdgt::storage::{Transaction, CategoryType, Category, Account};
 
 use super::command::{Command, CommandInternal};
