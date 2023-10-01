@@ -262,44 +262,6 @@ impl Report {
     fn build_plan_reports(budget: binding::Budget, interval: Option<Interval>, plan: Option<Id>) -> Result<Vec<PrintableReport>> {
         Ok(Vec::new())  // TODO
     }
-
-    fn colorize_amount(amount: isize) -> colored::ColoredString {
-        let result = amount.to_string()
-            .bold();
-
-        match amount {
-            v if v < 0 => result.red(),
-            0 => result.yellow(),
-            _ => result.green()
-        }
-    }
-
-    fn create_report_table() -> ReportTable {
-        use prettytable::format;
-
-        let format = format::FormatBuilder::new()
-            .column_separator('│')
-            .borders('│')
-            .separator(
-                format::LinePosition::Top, 
-                format::LineSeparator::new('─', '┬', '┌', '┐')
-            )
-            .separator(
-                format::LinePosition::Title, 
-                format::LineSeparator::new('─', '┼', '├', '┤')
-            )
-            .separator(
-                format::LinePosition::Bottom, 
-                format::LineSeparator::new('─', '┴', '└', '┘')
-            )
-            .padding(1, 1)
-            .build();
-
-        let mut table = ReportTable::new();
-        table.set_format(format);
-
-        table
-    }
 }
 
 
@@ -366,5 +328,43 @@ impl Report {
         let end = timestamp::advance_date(&start, duration)?;
 
         Ok(Some((start, end)))
+    }
+
+    fn colorize_amount(amount: isize) -> colored::ColoredString {
+        let result = amount.to_string()
+            .bold();
+
+        match amount {
+            v if v < 0 => result.red(),
+            0 => result.yellow(),
+            _ => result.green()
+        }
+    }
+
+    fn create_report_table() -> ReportTable {
+        use prettytable::format;
+
+        let format = format::FormatBuilder::new()
+            .column_separator('│')
+            .borders('│')
+            .separator(
+                format::LinePosition::Top, 
+                format::LineSeparator::new('─', '┬', '┌', '┐')
+            )
+            .separator(
+                format::LinePosition::Title, 
+                format::LineSeparator::new('─', '┼', '├', '┤')
+            )
+            .separator(
+                format::LinePosition::Bottom, 
+                format::LineSeparator::new('─', '┴', '└', '┘')
+            )
+            .padding(1, 1)
+            .build();
+
+        let mut table = ReportTable::new();
+        table.set_format(format);
+
+        table
     }
 }
