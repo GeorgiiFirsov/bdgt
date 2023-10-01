@@ -63,24 +63,48 @@ impl From<libbdgt::error::Error> for Error {
 }
 
 
-impl From<std::io::Error> for Error {
-    fn from(value: std::io::Error) -> Self {
-        Error(libbdgt::error::Error::from(value))
+/// Macro for implementing [`From<SomeError>`] in a beautiful way.
+/// It simplifies implementing the trait for a new error type
+/// to writing only one line of code.
+macro_rules! implement_from_error {
+    ($err_type:ty, $($err_types:ty),+ $(,)?) => {
+        implement_from_error!($err_type);
+        implement_from_error!($($err_types, )+);
+    };
+    ($err_type:ty $(,)?) => {
+        impl From<$err_type> for Error {
+            fn from(value: $err_type) -> Self {
+                let msg = value.to_string();
+                Error(libbdgt::error::Error::from_message(msg))
+            }
+        }
     }
 }
 
+implement_from_error!(
+    anyhow::Error, 
+    dialoguer::Error, 
+    std::fmt::Error, 
+    std::string::FromUtf8Error,
+);
 
-impl From<anyhow::Error> for Error {
-    fn from(value: anyhow::Error) -> Self {
-        let msg = value.to_string();
-        Error(libbdgt::error::Error::from_message(msg))
+
+/// Macro for implementing [`From<SomeError>`] in a beautiful way
+/// by forwarding the process directly to [`libbdgt::error::Error].
+macro_rules! implement_from_error_fwd {
+    ($err_type:ty, $($err_types:ty),+ $(,)?) => {
+        implement_from_error_simple!($err_type);
+        implement_from_error_simple!($($err_types, )+);
+    };
+    ($err_type:ty $(,)?) => {
+        impl From<$err_type> for Error {
+            fn from(value: $err_type) -> Self {
+                Error(libbdgt::error::Error::from(value))
+            }
+        }
     }
 }
 
-
-impl From<dialoguer::Error> for Error {
-    fn from(value: dialoguer::Error) -> Self {
-        let msg = value.to_string();
-        Error(libbdgt::error::Error::from_message(msg))
-    }
-}
+implement_from_error_fwd!(
+    std::io::Error,
+);

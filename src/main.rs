@@ -1,9 +1,12 @@
+extern crate prettytable;
 extern crate dateparser;
 extern crate dialoguer;
 extern crate itertools;
+extern crate colored;
 extern crate libbdgt;
 extern crate anyhow;
 extern crate chrono;
+extern crate minus;
 extern crate clap;
 
 mod timestamp;

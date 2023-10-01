@@ -1,4 +1,29 @@
+use std::fmt::Write;
+
 use crate::error::Result;
+
+
+/// Trait that provides a method of writing something into a [`minus::Pager`].
+pub(crate) trait WritePaged {
+    ///
+    fn write_paged(&self, pager: &mut minus::Pager) -> Result<()>;
+}
+
+
+/// Implementation of [`WritePaged`] for [`prettytable::Table`].
+/// If the table is styled using [`colored`] create functions, 
+/// the function preserves all styles.
+impl WritePaged for prettytable::Table {
+    fn write_paged(&self, pager: &mut minus::Pager) -> Result<()> {
+        let mut buffer = Vec::new();
+        self.print(&mut buffer)?;
+
+        let string_buffer = String::from_utf8(buffer)?;
+        pager.write_str(&string_buffer)?;
+
+        Ok(())
+    }
+}
 
 
 /// Reads a string from STDIN with printing a prompt before.
