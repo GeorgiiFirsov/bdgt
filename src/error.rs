@@ -83,7 +83,8 @@ macro_rules! implement_from_error {
 
 implement_from_error!(
     anyhow::Error, 
-    dialoguer::Error, 
+    dialoguer::Error,
+    minus::MinusError, 
     std::fmt::Error, 
     std::string::FromUtf8Error,
 );

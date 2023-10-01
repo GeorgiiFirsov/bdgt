@@ -1,14 +1,33 @@
-use libbdgt::storage::Timestamp;
+use libbdgt::storage::{Account, Timestamp, Id};
 
 use super::command::{Command, CommandInternal};
 use crate::error::{Result, Error};
+use crate::console::WritePaged;
 use crate::timestamp;
+use crate::binding;
 use crate::errors;
 use crate::misc;
 
 
-/// Time interval [start, end)
+/// Time interval [start, end).
 type Interval = (Timestamp, Timestamp);
+
+
+/// Type of report table, that will be printed.
+type ReportTable = prettytable::Table;
+
+
+/// Target for a report.
+enum ReportTarget {
+    /// Report is built for an account. If none specified, all accounts are used.
+    Account(Option<Id>),
+
+    /// Report is built for a category. If none specified, all categories are used.
+    Category(Option<Id>),
+
+    /// Report is built for a plan. If none specified, all plans are used.
+    Plan(Option<Id>),
+}
 
 
 /// Structure with command parameters.
@@ -21,6 +40,9 @@ pub(crate) struct Parameters {
 
     /// Month to build report for.
     month: i32,
+
+    /// Report target
+    target: ReportTarget,
 }
 
 
@@ -76,8 +98,36 @@ impl Command for Report {
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
         let parameters = Self::parse_args(matches)?;
+        let budget = binding::open_budget()?;
         let interval = Self::time_interval(&parameters)?;
-        println!("{:?}", interval);
+
+        //
+        // Build reports for the specified entities and time interval
+        //
+
+        let reports = match parameters.target {
+            ReportTarget::Account(account) => {
+                Self::build_account_reports(budget, interval, account)?
+            },
+            ReportTarget::Category(category) => {
+                Self::build_category_reports(budget, interval, category)?
+            },
+            ReportTarget::Plan(plan) => {
+                Self::build_plan_reports(budget, interval, plan)?
+            },
+        };
+
+        //
+        // Print all reports using pager
+        //
+
+        let mut pager = minus::Pager::new();
+
+        for report in reports {
+            report.write_paged(&mut pager)?;
+        }
+
+        minus::page_all(pager)?;
 
         Ok(())
     }
@@ -92,11 +142,36 @@ impl CommandInternal for Report {
         let month = Self::get_one(matches, "month")?;
         let year = Self::get_one(matches, "year")?;
 
+        let target = Self::get_target(matches)?;
+
         Ok(Parameters { 
             epoch: epoch, 
             year: year, 
             month: month,
+            target: target
         })
+    }
+}
+
+
+impl Report {
+    fn get_target(_matches: &clap::ArgMatches) -> Result<ReportTarget> {
+        Ok(ReportTarget::Account(None))  // TODO
+    }
+}
+
+
+impl Report {
+    fn build_account_reports(budget: binding::Budget, interval: Option<Interval>, account: Option<Id>) -> Result<Vec<ReportTable>> {
+        Ok(Vec::new())  // TODO
+    }
+
+    fn build_category_reports(budget: binding::Budget, interval: Option<Interval>, category: Option<Id>) -> Result<Vec<ReportTable>> {
+        Ok(Vec::new())  // TODO
+    }
+
+    fn build_plan_reports(budget: binding::Budget, interval: Option<Interval>, plan: Option<Id>) -> Result<Vec<ReportTable>> {
+        Ok(Vec::new())  // TODO
     }
 }
 
