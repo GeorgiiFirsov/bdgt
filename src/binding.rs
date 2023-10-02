@@ -28,7 +28,7 @@ pub(crate) type Budget = budget::Budget<Engine, Storage>;
 /// 
 /// Returns engine's name and version.
 pub(crate) fn query_engine_info() -> Result<(&'static str, &'static str)> {
-    let engine = Engine::new()?;
+    let engine = Engine::new_dummy()?;
     Ok((engine.engine(), engine.version()))
 }
 
@@ -52,8 +52,7 @@ pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget> {
     //
 
     let id = KeyId::new(key_id);
-    let engine = Engine::new()?;
-    engine.lookup_key(&id)?;
+    let engine = Engine::create(&loc, &id)?;
 
     //
     // Key is present and suitable for encryption,
@@ -75,7 +74,7 @@ pub(crate) fn open_budget() -> Result<Budget> {
     // Storage root exists here, now I can just open everything
     //
 
-    let engine = Engine::new()?;
+    let engine = Engine::open(&loc)?;
     let config = Config::open(&loc)?;
     let storage = Storage::open(&loc)?;
 
