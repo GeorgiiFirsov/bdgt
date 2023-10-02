@@ -158,8 +158,8 @@ impl AddTransaction {
             id: None,
             timestamp: timestamp,
             description: description,
-            category_id: category.id.unwrap(),
             account_id: account.id.unwrap(),
+            category_id: category.id.unwrap(),
             amount: amount
         })
     }
