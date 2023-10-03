@@ -244,22 +244,22 @@ impl Report {
         table.set_titles(prettytable::row!["Description", "Amount", "Date and time", "Category"]);
 
         for transaction in transactions {
-            table.add_row(prettytable::row![
-                transaction.description, 
-                Self::colorize_amount(transaction.amount), 
-                transaction.timestamp.to_rfc2822(),
-                categories.get(&transaction.category_id).unwrap().name
-            ]);
+            table.add_row(prettytable::Row::new(vec![
+                prettytable::cell!(transaction.description),
+                prettytable::cell!(r -> Self::colorize_amount(transaction.amount)),
+                prettytable::cell!(transaction.timestamp.to_rfc2822()),
+                prettytable::cell!(categories.get(&transaction.category_id).unwrap().name)
+            ]));
         }
 
         Ok((preamble, table))
     }
 
-    fn build_category_reports(budget: binding::Budget, interval: Option<Interval>, category: Option<Id>) -> Result<Vec<PrintableReport>> {
+    fn build_category_reports(_budget: binding::Budget, _interval: Option<Interval>, _category: Option<Id>) -> Result<Vec<PrintableReport>> {
         Ok(Vec::new())  // TODO
     }
 
-    fn build_plan_reports(budget: binding::Budget, interval: Option<Interval>, plan: Option<Id>) -> Result<Vec<PrintableReport>> {
+    fn build_plan_reports(_budget: binding::Budget, _interval: Option<Interval>, _plan: Option<Id>) -> Result<Vec<PrintableReport>> {
         Ok(Vec::new())  // TODO
     }
 }
