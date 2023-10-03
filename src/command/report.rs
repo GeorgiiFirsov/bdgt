@@ -4,6 +4,7 @@ use std::fmt::Write;
 use libbdgt::storage::{Account, Timestamp, Id, Category};
 
 use colored::Colorize;
+use itertools::Itertools;
 
 use super::command::{Command, CommandInternal};
 use crate::error::{Result, Error};
@@ -98,11 +99,15 @@ impl Command for Report {
             .arg(
                 clap::arg!(-a --account <ACCOUNT> "build report for specified account")
                     .value_parser(clap::value_parser!(usize))
-                    .conflicts_with_all(["accounts"])
+                    .conflicts_with_all(["accounts", "categories"])
             )
             .arg(
                 clap::arg!(--accounts "build report for all accounts (this is default option)")
-                    .conflicts_with_all(["account"])
+                    .conflicts_with_all(["account", "categories"])
+            )
+            .arg(
+                clap::arg!(--categories "build report for all categories")
+                    .conflicts_with_all(["account", "accounts"])
             )
     }
 
@@ -117,13 +122,13 @@ impl Command for Report {
 
         let reports = match parameters.target {
             ReportTarget::Account(account) => {
-                Self::build_account_reports(budget, interval, account)?
+                Self::build_accounts_report(budget, interval, account)?
             },
-            ReportTarget::Category(category) => {
-                Self::build_category_reports(budget, interval, category)?
+            ReportTarget::Category(_) => {
+                Self::build_categories_report(budget, interval)?
             },
             ReportTarget::Plan(plan) => {
-                Self::build_plan_reports(budget, interval, plan)?
+                Self::build_plans_report(budget, interval, plan)?
             },
         };
 
@@ -177,6 +182,10 @@ impl Report {
             return Ok(ReportTarget::Account(Some(account)));
         }
 
+        if Self::get_one(matches, "categories")? {
+            return Ok(ReportTarget::Category(None));
+        }
+
         //
         // By default, report is built for all accounts
         //
@@ -187,7 +196,7 @@ impl Report {
 
 
 impl Report {
-    fn build_account_reports(budget: binding::Budget, interval: Option<Interval>, account: Option<Id>) -> Result<Vec<PrintableReport>> {
+    fn build_accounts_report(budget: binding::Budget, interval: Option<Interval>, account: Option<Id>) -> Result<Vec<PrintableReport>> {
         //
         // Query for account(s) data
         //
@@ -240,8 +249,8 @@ impl Report {
         // Now let's build a report
         //
 
-        let mut table = Self::create_report_table();
-        table.set_titles(prettytable::row!["Description", "Amount", "Date and time", "Category"]);
+        let mut table = Self::create_report_table(
+            prettytable::row!["Description", "Amount", "Date and time", "Category"]);
 
         for transaction in transactions {
             table.add_row(prettytable::Row::new(vec![
@@ -254,12 +263,72 @@ impl Report {
 
         Ok((preamble, table))
     }
+}
 
-    fn build_category_reports(_budget: binding::Budget, _interval: Option<Interval>, _category: Option<Id>) -> Result<Vec<PrintableReport>> {
-        Ok(Vec::new())  // TODO
+
+impl Report {
+    fn build_categories_report(budget: binding::Budget, interval: Option<Interval>) -> Result<Vec<PrintableReport>> {
+        //
+        // Query transactions
+        //
+
+        let mut transactions = match interval {
+            Some((start_timestamp, end_timestamp)) => {
+                budget.transactions_between(start_timestamp, end_timestamp)?
+            },
+            None => {
+                budget.transactions()?
+            }
+        };
+
+        if transactions.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        //
+        // Transactions MUST be sorted by category here to successfully perform grouping
+        //
+
+        transactions.sort_unstable_by_key(|transaction| transaction.category_id);
+        let grouped_transactions = transactions
+            .into_iter()
+            .group_by(|transaction| transaction.category_id);
+
+        //
+        // Query all categories and trasform them into a hash table
+        //
+
+        let categories = budget.categories()?;
+        let categories: HashMap<_, _> = categories
+            .into_iter()
+            .map(|category| (category.id.unwrap(), category))
+            .collect();
+
+        //
+        // Now we are ready to build a report
+        //
+
+        let mut table = Self::create_report_table(
+            prettytable::row!["Category", "Total amount"]);
+
+        for (category, group) in grouped_transactions.into_iter() {
+            let category = categories.get(&category).unwrap();
+            let total = group
+                .fold(0isize, |accumulator, transaction| accumulator + transaction.amount);
+
+            table.add_row(prettytable::Row::new(vec![
+                prettytable::cell!(category.name),
+                prettytable::cell!(r -> Self::colorize_amount(total))
+            ]));
+        }
+
+        Ok(vec![("".to_string(), table)])
     }
+}
 
-    fn build_plan_reports(_budget: binding::Budget, _interval: Option<Interval>, _plan: Option<Id>) -> Result<Vec<PrintableReport>> {
+
+impl Report {
+    fn build_plans_report(_budget: binding::Budget, _interval: Option<Interval>, _plan: Option<Id>) -> Result<Vec<PrintableReport>> {
         Ok(Vec::new())  // TODO
     }
 }
@@ -341,7 +410,7 @@ impl Report {
         }
     }
 
-    fn create_report_table() -> ReportTable {
+    fn create_report_table(titles: prettytable::Row) -> ReportTable {
         use prettytable::format;
 
         let format = format::FormatBuilder::new()
@@ -364,6 +433,7 @@ impl Report {
 
         let mut table = ReportTable::new();
         table.set_format(format);
+        table.set_titles(titles);
 
         table
     }
