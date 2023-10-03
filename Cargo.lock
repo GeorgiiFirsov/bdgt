@@ -737,6 +737,7 @@ dependencies = [
  "gpgme",
  "rand",
  "rusqlite",
+ "typenum",
  "uuid",
 ]
 
