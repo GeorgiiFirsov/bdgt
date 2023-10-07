@@ -58,6 +58,7 @@ fn run() -> Result<()> {
         command::RemoveAccount,
         command::RemoveCategory,
         command::RemovePlan,
+        command::Service,
         command::About,
     )
 }
