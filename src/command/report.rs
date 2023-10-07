@@ -272,7 +272,7 @@ impl Report {
         // Query transactions
         //
 
-        let mut transactions = match interval {
+        let transactions = match interval {
             Some((start_timestamp, end_timestamp)) => {
                 budget.transactions_between(start_timestamp, end_timestamp)?
             },
@@ -286,15 +286,6 @@ impl Report {
         }
 
         //
-        // Transactions MUST be sorted by category here to successfully perform grouping
-        //
-
-        transactions.sort_unstable_by_key(|transaction| transaction.category_id);
-        let grouped_transactions = transactions
-            .into_iter()
-            .group_by(|transaction| transaction.category_id);
-
-        //
         // Query all categories and trasform them into a hash table
         //
 
@@ -305,19 +296,34 @@ impl Report {
             .collect();
 
         //
-        // Now we are ready to build a report
+        // Now let's build a report
+        //
+
+        let report: Vec<_> = transactions
+            .into_iter()
+            .sorted_unstable_by_key(|transaction| transaction.category_id)
+            .group_by(|transaction| transaction.category_id)
+            .into_iter()
+            .map(|(category, group)| {
+                let category = categories.get(&category).unwrap();
+                let total = group
+                    .fold(0isize, |accumulator, transaction| accumulator + transaction.amount);
+
+                (category.category_type, category.name.to_owned(), total)
+            })
+            .sorted_by_key(|(category_type, _, total)| (*category_type, *total))
+            .collect();
+
+        //
+        // Put all data into a table
         //
 
         let mut table = Self::create_report_table(
             prettytable::row!["Category", "Total amount"]);
 
-        for (category, group) in grouped_transactions.into_iter() {
-            let category = categories.get(&category).unwrap();
-            let total = group
-                .fold(0isize, |accumulator, transaction| accumulator + transaction.amount);
-
+        for (_, name, total) in report {
             table.add_row(prettytable::Row::new(vec![
-                prettytable::cell!(category.name),
+                prettytable::cell!(name),
                 prettytable::cell!(r -> Self::colorize_amount(total))
             ]));
         }
