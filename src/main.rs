@@ -75,8 +75,7 @@ fn handle_error<E: std::error::Error>(error: E) {
 
 
 fn main() {
-    match run() {
-        Ok(_) => (),
-        Err(error) => handle_error(error),
+    if let Err(error) = run() {
+        handle_error(error);
     }
 }
