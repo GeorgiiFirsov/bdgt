@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::Write;
 
-use libbdgt::storage::{Account, Timestamp, Id, Category};
+use libbdgt::storage::{Account, Plan, Timestamp, Id, Category};
 
 use colored::Colorize;
 use itertools::Itertools;
@@ -99,15 +99,24 @@ impl Command for Report {
             .arg(
                 clap::arg!(-a --account <ACCOUNT> "build report for specified account")
                     .value_parser(clap::value_parser!(usize))
-                    .conflicts_with_all(["accounts", "categories"])
+                    .conflicts_with_all(["accounts", "categories", "plan", "plans"])
             )
             .arg(
                 clap::arg!(--accounts "build report for all accounts (this is default option)")
-                    .conflicts_with_all(["account", "categories"])
+                    .conflicts_with_all(["account", "categories", "plan", "plans"])
             )
             .arg(
                 clap::arg!(--categories "build report for all categories")
-                    .conflicts_with_all(["account", "accounts"])
+                    .conflicts_with_all(["account", "accounts", "plan", "plans"])
+            )
+            .arg(
+                clap::arg!(-p --plan <PLAN> "build report for specified plan")
+                    .value_parser(clap::value_parser!(usize))
+                    .conflicts_with_all(["accounts", "categories", "plans"])
+            )
+            .arg(
+                clap::arg!(--plans "build report for all plans")
+                    .conflicts_with_all(["account", "categories", "plan"])
             )
     }
 
@@ -186,6 +195,14 @@ impl Report {
             return Ok(ReportTarget::Category(None));
         }
 
+        if Self::get_one(matches, "plans")? {
+            return Ok(ReportTarget::Plan(None));
+        }
+
+        if let Some(plan) = Self::get_one_opt(matches, "plan") {
+            return Ok(ReportTarget::Plan(plan));
+        }
+
         //
         // By default, report is built for all accounts
         //
@@ -222,13 +239,13 @@ impl Report {
 
         let mut reports = Vec::new();
         for account in accounts {
-            reports.push(Self::build_account_report(&budget, &interval, &account, &categories)?)
+            reports.push(Self::internal_build_account_report(&budget, &interval, &account, &categories)?)
         }
 
         Ok(reports)
     }
 
-    fn build_account_report(budget: &binding::Budget, interval: &Option<Interval>, account: &Account, categories: &HashMap<Id, Category>) -> Result<PrintableReport> {
+    fn internal_build_account_report(budget: &binding::Budget, interval: &Option<Interval>, account: &Account, categories: &HashMap<Id, Category>) -> Result<PrintableReport> {
         let preamble = format!("Account: {}\nIdentifier: {}\nCurrent balance: {}\n",
             account.name, account.id.unwrap(), Self::colorize_amount(account.balance));
         
@@ -334,8 +351,62 @@ impl Report {
 
 
 impl Report {
-    fn build_plans_report(_budget: binding::Budget, _interval: Option<Interval>, _plan: Option<Id>) -> Result<Vec<PrintableReport>> {
-        Ok(Vec::new())  // TODO
+    fn build_plans_report(budget: binding::Budget, interval: Option<Interval>, plan: Option<Id>) -> Result<Vec<PrintableReport>> {
+        //
+        // Query for plan(s) data
+        //
+
+        let plans = match plan {
+            Some(plan) => vec![budget.plan(plan)?],
+            None => budget.plans()?
+        };
+
+        //
+        // Now we are ready to build report (it is summarized )
+        //
+
+        let mut table = Self::create_report_table(
+            prettytable::row!["Plan", "Category", "Spent", "Remains"]);
+
+        for plan in plans {
+            let (category, spent) = Self::internal_build_plan_report(&budget, &interval, &plan)?;
+
+            table.add_row(prettytable::Row::new(vec![
+                prettytable::cell!(plan.name),
+                prettytable::cell!(category.name),
+                prettytable::cell!(r -> spent),
+                prettytable::cell!(r -> Self::colorize_amount(plan.amount_limit - spent))
+            ]));
+        }
+
+        Ok(vec![("".to_string(), table)])
+    }
+
+    fn internal_build_plan_report(budget: &binding::Budget, interval: &Option<Interval>, plan: &Plan) -> Result<(Category, isize)> {
+        //
+        // Query for category and transactions that correspond to the plan
+        //
+
+        let category = budget.category(plan.category_id)?;
+        let transactions = match interval {
+            Some((start_timestamp, end_timestamp)) => {
+                budget.transactions_with_between(plan.category_id, *start_timestamp, *end_timestamp)?
+            },
+            None => {
+                budget.transactions_with(plan.category_id)?
+            }
+        };
+
+        //
+        // Calculate spent amount of money
+        //
+
+        let spent = transactions
+            .into_iter()
+            .fold(0isize, |accumulator, transaction| accumulator + transaction.amount)
+            .abs();
+
+        Ok((category, spent))
     }
 }
 
