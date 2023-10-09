@@ -20,6 +20,9 @@ jobs:
     steps:
     - name: Install gpg libraries
       run: brew install gnupg
+
+    - name: Print gnupg info
+      run: brew info gnupg
       
     - uses: actions/checkout@v3
       with:
