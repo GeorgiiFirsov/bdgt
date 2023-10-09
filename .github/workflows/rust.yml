@@ -20,9 +20,6 @@ jobs:
     steps:
     - name: Install gpg libraries
       run: brew install gpgme
-
-    - name: Print gnupg info
-      run: brew info gnupg
       
     - uses: actions/checkout@v3
       with:
@@ -43,7 +40,7 @@ jobs:
     - name: Build
       run: |
         cargo build --release --target x86_64-apple-darwin
-        cargo build --release --target aarch64-apple-darwin
+        cross build --release --target aarch64-apple-darwin
 
     - name: Print targets
       run: ls -l
