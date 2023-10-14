@@ -42,3 +42,9 @@ tar -xzvf $GPGERROR_ARCHIVE -C $GPGERROR_FOLDER  --strip-components 1
 #
 ./hide-homebrew-pkg.sh gpgme
 ./hide-homebrew-pkg.sh gpg-error
+
+#
+# Print dependencies after hiding original
+#
+pkg-config --libs gpgme
+pkg-config --libs gpg-error
