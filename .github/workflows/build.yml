@@ -41,6 +41,7 @@ jobs:
       run: |
         chmod +x ./build/*.sh
         ./build/prepare-cross-build.sh aarch64-apple-darwin
+        rustup target add aarch64-apple-darwin
         cargo build --bin bdgt --release --target aarch64-apple-darwin
 
     - name: Print targets
