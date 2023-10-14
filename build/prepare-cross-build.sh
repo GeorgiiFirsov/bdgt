@@ -11,8 +11,8 @@ GPGERROR_PKG=libgpg-error-1.47.tar.gz
 GPGME_ARCHIVE=gpgme.tar.bz2
 GPGERROR_ARCHIVE=gpg-error.tar.gz
 
-GPGME_FOLDER=gpgme
-GPGERROR_FOLDER=gpgerror
+GPGME_FOLDER=$(pwd)/gpgme
+GPGERROR_FOLDER=$(pwd)/gpgerror
 
 #
 # Install wget
@@ -28,14 +28,14 @@ wget -c $GPGERROR_SRV/$GPGERROR_PKG -O $GPGERROR_ARCHIVE
 mkdir $GPGME_FOLDER
 mkdir $GPGERROR_FOLDER
 
-tar -xzjf $GPGME_ARCHIVE -C $GPGME_FOLDER  --strip-components 1
+tar -xjf $GPGME_ARCHIVE -C $GPGME_FOLDER  --strip-components 1
 tar -xzvf $GPGERROR_ARCHIVE -C $GPGERROR_FOLDER  --strip-components 1
 
 #
 # Build deps
 #
-./build-deps.sh $(pwd)/$GPGME_FOLDER $ARCH
-./build-deps.sh $(pwd)/$GPGERROR_FOLDER $ARCH
+./build-deps.sh $GPGME_FOLDER $ARCH
+./build-deps.sh $GPGERROR_FOLDER $ARCH
 
 #
 # Hide original installed packages if any and we are done
