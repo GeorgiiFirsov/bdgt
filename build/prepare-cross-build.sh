@@ -5,10 +5,10 @@ ARCH=$1
 GPGME_SRV=https://gnupg.org/ftp/gcrypt/gpgme
 GPGERROR_SRV=https://gnupg.org/ftp/gcrypt/libgpg-error
 
-GPGME_PKG=gpgme-1.22.0.tar.gz
+GPGME_PKG=gpgme-1.22.0.tar.bz2
 GPGERROR_PKG=libgpg-error-1.47.tar.gz
 
-GPGME_ARCHIVE=gpgme.tar.gz
+GPGME_ARCHIVE=gpgme.tar.bz2
 GPGERROR_ARCHIVE=gpg-error.tar.gz
 
 GPGME_FOLDER=gpgme
@@ -23,12 +23,12 @@ brew install wget
 # Download and extract dependencies
 #
 wget -c $GPGME_SRV/$GPGME_PKG -O $GPGME_ARCHIVE
-whet -c $GPGERROR_SRV/$GPGERROR_PKG -O $GPGERROR_ARCHIVE
+wget -c $GPGERROR_SRV/$GPGERROR_PKG -O $GPGERROR_ARCHIVE
 
 mkdir $GPGME_FOLDER
 mkdir $GPGERROR_FOLDER
 
-tar -xzvf $GPGME_ARCHIVE -C $GPGME_FOLDER  --strip-components 1
+tar -xzjf $GPGME_ARCHIVE -C $GPGME_FOLDER  --strip-components 1
 tar -xzvf $GPGERROR_ARCHIVE -C $GPGERROR_FOLDER  --strip-components 1
 
 #
