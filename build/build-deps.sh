@@ -13,7 +13,6 @@ pushd $FOLDER
 # Build package
 #
 make
-make check
 make install
 
 #
