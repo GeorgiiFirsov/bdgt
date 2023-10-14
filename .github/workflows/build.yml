@@ -40,7 +40,11 @@ jobs:
     - name: Prepare crosscompilation and build app
       run: |
         chmod +x ./build/*.sh
-        ./build/prepare-cross-build.sh aarch64-apple-darwin
+        
+        pushd build
+        ./prepare-cross-build.sh aarch64-apple-darwin
+        popd
+        
         rustup target add aarch64-apple-darwin
         cargo build --bin bdgt --release --target aarch64-apple-darwin
 
