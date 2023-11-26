@@ -2,10 +2,8 @@ name: Build for macOS
 
 on:
   push:
-    branches: [ "main", 'ci' ]
-    
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*.*.*'
 
 env:
   CARGO_TERM_COLOR: always
@@ -40,4 +38,11 @@ jobs:
     - name: Print targets
       run: |
         ls -l target
-        ls -l target/x86_64-apple-darwin
+
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: target/x86_64-apple-darwin/bdgt
+        token: ${{ secrets.ACCESS_TOKEN }}
+        draft: false
+        prerelease: false
