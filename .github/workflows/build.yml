@@ -1,0 +1,48 @@
+name: Build for macOS
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  CARGO_TERM_COLOR: always
+  PKG_CONFIG_SYSROOT_DIR: /
+
+jobs:
+  build:
+    runs-on: macos-12
+    
+    if: "contains(github.event.head_commit.message, '[build]')"
+
+    steps:
+    - name: Install gpg libraries
+      run: brew install gpgme
+      
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        token: ${{ secrets.ACCESS_TOKEN }}
+        
+    - name: Print cargo info
+      run: cargo -vV
+
+    - name: Install necessary targets
+      run: |
+        rustup target add x86_64-apple-darwin
+      
+    - name: Build
+      run: |
+        cargo build --bin bdgt --release --target x86_64-apple-darwin
+        
+    - name: Print targets
+      run: |
+        ls -l target
+
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: target/x86_64-apple-darwin/bdgt
+        token: ${{ secrets.ACCESS_TOKEN }}
+        draft: false
+        prerelease: false
