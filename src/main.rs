@@ -52,6 +52,7 @@ fn run() -> Result<()> {
         command::Initialize,
         command::Report,
         command::AddTransaction,
+        command::Transfer,
         command::AddAccount,
         command::AddCategory,
         command::AddPlan,

@@ -1,7 +1,7 @@
 use libbdgt::crypto::CryptoEngine;
 use libbdgt::location::Location;
 
-use libbdgt::{budget, crypto, config, storage, location};
+use libbdgt::{core, crypto, config, storage, location};
 use libbdgt::error::{Result, Error};
 
 use crate::errors;
@@ -21,7 +21,7 @@ type Config = config::Config<Engine>;
 
 /// Budget type alias. Instantiation of generic type with concrete parameters.
 /// Public for current crate to allow passing as a parameter into functions.
-pub(crate) type Budget = budget::Budget<Engine, Storage>;
+pub(crate) type Budget = core::Budget<Engine, Storage>;
 
 
 /// Queries for cryptographic engine information.
@@ -62,7 +62,10 @@ pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget> {
     let config = Config::create(&loc, &id)?;
     let storage = Storage::create(&loc)?;
     
-    Budget::new(engine, storage, config)
+    let budget = Budget::new(engine, storage, config)?;
+    budget.initialize()?;
+
+    Ok(budget)
 }
 
 

@@ -3,7 +3,6 @@ use std::fmt::Write;
 
 use libbdgt::storage::{Account, Plan, Timestamp, Id, Category};
 
-use colored::Colorize;
 use itertools::Itertools;
 
 use super::command::{Command, CommandInternal};
@@ -11,6 +10,7 @@ use crate::error::{Result, Error};
 use crate::console::WritePaged;
 use crate::timestamp;
 use crate::binding;
+use crate::console;
 use crate::errors;
 use crate::misc;
 
@@ -247,7 +247,7 @@ impl Report {
 
     fn internal_build_account_report(budget: &binding::Budget, interval: &Option<Interval>, account: &Account, categories: &HashMap<Id, Category>) -> Result<PrintableReport> {
         let preamble = format!("Account: {}\nIdentifier: {}\nCurrent balance: {}\n",
-            account.name, account.id.unwrap(), Self::colorize_amount(account.balance));
+            account.name, account.id.unwrap(), console::colorize_amount(account.balance));
         
         //
         // Query for transactions, that correspond to the account
@@ -272,7 +272,7 @@ impl Report {
         for transaction in transactions {
             table.add_row(prettytable::Row::new(vec![
                 prettytable::cell!(transaction.description),
-                prettytable::cell!(r -> Self::colorize_amount(transaction.amount)),
+                prettytable::cell!(r -> console::colorize_amount(transaction.amount)),
                 prettytable::cell!(transaction.timestamp.to_rfc2822()),
                 prettytable::cell!(categories.get(&transaction.category_id).unwrap().name)
             ]));
@@ -341,7 +341,7 @@ impl Report {
         for (_, name, total) in report {
             table.add_row(prettytable::Row::new(vec![
                 prettytable::cell!(name),
-                prettytable::cell!(r -> Self::colorize_amount(total))
+                prettytable::cell!(r -> console::colorize_amount(total))
             ]));
         }
 
@@ -375,7 +375,7 @@ impl Report {
                 prettytable::cell!(plan.name),
                 prettytable::cell!(category.name),
                 prettytable::cell!(r -> spent),
-                prettytable::cell!(r -> Self::colorize_amount(plan.amount_limit - spent))
+                prettytable::cell!(r -> console::colorize_amount(plan.amount_limit - spent))
             ]));
         }
 
@@ -474,17 +474,6 @@ impl Report {
         let end = timestamp::advance_date(&start, duration)?;
 
         Ok(Some((start, end)))
-    }
-
-    fn colorize_amount(amount: isize) -> colored::ColoredString {
-        let result = amount.to_string()
-            .bold();
-
-        match amount {
-            v if v < 0 => result.red(),
-            0 => result.yellow(),
-            _ => result.green()
-        }
     }
 
     fn create_report_table(titles: prettytable::Row) -> ReportTable {
