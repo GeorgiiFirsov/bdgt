@@ -36,6 +36,8 @@ jobs:
     - name: Print targets
       run: |
         ls -l target
+        brew install tree
+        tree target/x86_64-apple-darwin
 
     - name: Create release
       uses: softprops/action-gh-release@v1
