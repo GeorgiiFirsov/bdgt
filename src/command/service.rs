@@ -26,7 +26,7 @@ impl Command for Service {
     fn add_args(command: clap::Command) -> clap::Command {
         command
             .arg(clap::arg!(-f --force "skip all confirmations"))
-            .arg(clap::arg!(--cleanup "clear all removed transactions"))
+            .arg(clap::arg!(--cleanup "clear all removed items"))
     }
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
