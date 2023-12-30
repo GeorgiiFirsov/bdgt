@@ -1,11 +1,15 @@
 use std::fmt::Write;
 
+use colored::Colorize;
+
 use crate::error::Result;
 
 
 /// Trait that provides a method of writing something into a [`minus::Pager`].
 pub(crate) trait WritePaged {
-    ///
+    /// Writes data of the object into a [`minus::Pager`].
+    /// 
+    /// * `pager` - a [`minus::Pager`] instance
     fn write_paged(&self, pager: &mut minus::Pager) -> Result<()>;
 }
 
@@ -33,6 +37,25 @@ impl WritePaged for String {
         pager.write_str(&self)?;
 
         Ok(())
+    }
+}
+
+
+/// Returns a colored string, that represents an amount of
+/// money.
+/// 
+/// Negative, positive and zero values will be painted red, 
+/// green and yellow respectively. 
+/// 
+/// * `amount` - amount of mony to colorize
+pub fn colorize_amount(amount: isize) -> colored::ColoredString {
+    let result = amount.to_string()
+        .bold();
+
+    match amount {
+        v if v < 0 => result.red(),
+        0 => result.yellow(),
+        _ => result.green()
     }
 }
 
