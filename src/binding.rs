@@ -55,7 +55,7 @@ pub(crate) fn initialize_budget(key_id: &str, remote: Option<&str>) -> Result<Bu
     //
 
     let id = KeyId::new(key_id);
-    let engine = CryptographicEngine::create(&loc, &id)?;
+    let crypto_engine = CryptographicEngine::create(&loc, &id)?;
 
     //
     // Key is present and suitable for encryption,
@@ -66,7 +66,10 @@ pub(crate) fn initialize_budget(key_id: &str, remote: Option<&str>) -> Result<Bu
     let storage = Storage::create(&loc)?;
     let sync_engine = SynchronizationEngine::create(&loc, remote)?;
     
-    Budget::new(engine, sync_engine, storage, config)
+    let budget = Budget::new(crypto_engine, sync_engine, storage, config)?;
+    budget.initialize()?;
+
+    Ok(budget)
 }
 
 
