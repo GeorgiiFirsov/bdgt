@@ -247,7 +247,7 @@ impl Report {
 
     fn internal_build_account_report(budget: &binding::Budget, interval: &Option<Interval>, account: &Account, categories: &HashMap<Id, Category>) -> Result<PrintableReport> {
         let preamble = format!("Account: {}\nIdentifier: {}\nCurrent balance: {}\n",
-            account.name, account.id.unwrap(), console::colorize_amount(account.balance));
+            account.name, uuid::Uuid::from_bytes(account.id.unwrap()), console::colorize_amount(account.balance));
         
         //
         // Query for transactions, that correspond to the account

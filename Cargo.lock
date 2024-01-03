@@ -152,6 +152,7 @@ dependencies = [
  "libbdgt",
  "minus",
  "prettytable-rs",
+ "uuid",
 ]
 
 [[package]]
