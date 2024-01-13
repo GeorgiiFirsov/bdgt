@@ -1,7 +1,7 @@
 use libbdgt::crypto::CryptoEngine;
 use libbdgt::location::Location;
 
-use libbdgt::{core, crypto, config, storage, location, sync};
+use libbdgt::{core, crypto, storage, location, sync};
 use libbdgt::error::{Result, Error};
 
 use crate::errors;
@@ -20,7 +20,7 @@ type KeyId = <CryptographicEngine as CryptoEngine>::KeyId;
 type Storage = storage::DbStorage;
 
 /// Config type alias for quick config changes.
-type Config = config::Config<CryptographicEngine>;
+type Config = core::Config<CryptographicEngine>;
 
 /// Budget type alias. Instantiation of generic type with concrete parameters.
 /// Public for current crate to allow passing as a parameter into functions.
@@ -39,6 +39,7 @@ pub(crate) fn query_engine_info() -> Result<(&'static str, &'static str)> {
 /// Performs initialization of the storage.
 /// 
 /// * `key_id` - identifier of a key used to protect data
+/// * `remote` - remote repository URL
 pub(crate) fn initialize_budget(key_id: &str, remote: Option<&str>) -> Result<Budget> {
     //
     // Check for storage existence
