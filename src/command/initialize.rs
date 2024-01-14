@@ -11,7 +11,7 @@ pub(crate) struct Initialize;
 impl Command for Initialize {
     const VERB: &'static str = "init";
 
-    const ABOUT: &'static str = "Initialize storage and use KEY_ID for sensitive data protection";
+    const ABOUT: &'static str = "Initialize storage";
 
     const LONG_ABOUT: &'static str = misc::multiline!(
         "This command MUST be invoked before any other command may be run.",
