@@ -10,7 +10,7 @@ extern crate chrono;
 extern crate minus;
 extern crate clap;
 
-mod timestamp;
+mod datetime;
 mod console;
 mod command;
 mod binding;

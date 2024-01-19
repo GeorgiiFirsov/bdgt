@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 use std::fmt::Write;
 
-use libbdgt::storage::{Account, Plan, Timestamp, Id, Category};
+use libbdgt::storage::{Account, Plan, Id, Category};
+use libbdgt::datetime::Timestamp;
 
 use itertools::Itertools;
 
 use super::command::{Command, CommandInternal};
 use crate::error::{Result, Error};
 use crate::console::WritePaged;
-use crate::timestamp;
+use crate::datetime;
 use crate::binding;
 use crate::console;
 use crate::errors;
@@ -455,23 +456,23 @@ impl Report {
                 // Case 2 and case 8
                 //
 
-                timestamp::Duration::Year(1)
+                datetime::Duration::Year(1)
             },
             _ => {
                 //
                 // Rest cases
                 //
 
-                timestamp::Duration::Month(1)
+                datetime::Duration::Month(1)
             }
         };
 
-        let start = timestamp::make_date(
-            timestamp::absolute_year(year), 
-            timestamp::absolute_month(month), 
+        let start = datetime::make_date(
+            datetime::absolute_year(year), 
+            datetime::absolute_month(month), 
             1)?;
 
-        let end = timestamp::advance_date(&start, duration)?;
+        let end = datetime::advance_date(&start, duration)?;
 
         Ok(Some((start, end)))
     }

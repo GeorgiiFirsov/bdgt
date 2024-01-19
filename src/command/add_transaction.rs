@@ -1,4 +1,5 @@
 use libbdgt::storage::{Transaction, CategoryType, Category, Account};
+use libbdgt::datetime::Clock;
 
 use super::command::{Command, CommandInternal};
 use super::common;
@@ -151,7 +152,7 @@ impl AddTransaction {
             dateparser::parse(&datetime)?
         }
         else {
-            chrono::Utc::now()
+            Clock::now()
         };
 
         Ok(Transaction {
