@@ -1,4 +1,5 @@
-use libbdgt::storage::Account;
+use libbdgt::datetime::Clock;
+use libbdgt::storage::{Account, MetaInfo};
 
 use super::command::{Command, CommandInternal};
 use crate::error::Result;
@@ -56,7 +57,8 @@ impl AddAccount {
         Ok(Account { 
             id: None,
             name: name, 
-            balance: balance
+            balance: balance,
+            meta_info: MetaInfo::new(Some(Clock::now()), None, None)
         })
     }
 

@@ -1,3 +1,5 @@
+use libbdgt::datetime::Clock;
+
 use super::command::{Command, CommandInternal};
 use super::common;
 use crate::error::Result;
@@ -38,7 +40,7 @@ impl Command for RemoveCategory {
 
         for idx in selection {
             let category = &categories[idx];
-            match budget.remove_category(category.id.unwrap()) {
+            match budget.remove_category(category.id.unwrap(), Clock::now()) {
                 Ok(_) => {},
                 Err(e) => eprintln!("Cannot remove category '{}': {}", category.name, e)
             }

@@ -1,4 +1,5 @@
-use libbdgt::storage::Category;
+use libbdgt::datetime::Clock;
+use libbdgt::storage::{Category, MetaInfo};
 
 use super::command::{Command, CommandInternal};
 use super::common;
@@ -59,7 +60,8 @@ impl AddCategory {
         Ok(Category { 
             id: None,
             name: name, 
-            category_type: common::category_type_by_index(selection)?
+            category_type: common::category_type_by_index(selection)?,
+            meta_info: MetaInfo::new(Some(Clock::now()), None, None)
         })
     }
 

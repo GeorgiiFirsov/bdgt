@@ -1,4 +1,5 @@
-use libbdgt::storage::{Plan, Category, CategoryType};
+use libbdgt::datetime::Clock;
+use libbdgt::storage::{Plan, Category, CategoryType, MetaInfo};
 
 use super::command::{Command, CommandInternal};
 use super::common;
@@ -91,7 +92,8 @@ impl AddPlan {
             id: None,
             category_id: category.id.unwrap(),
             name: name,
-            amount_limit: amount_limit
+            amount_limit: amount_limit,
+            meta_info: MetaInfo::new(Some(Clock::now()), None, None)
         })
     }
 

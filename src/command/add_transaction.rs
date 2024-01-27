@@ -1,5 +1,5 @@
-use libbdgt::storage::{Transaction, CategoryType, Category, Account};
 use libbdgt::datetime::Clock;
+use libbdgt::storage::{Transaction, CategoryType, Category, Account, MetaInfo};
 
 use super::command::{Command, CommandInternal};
 use super::common;
@@ -161,7 +161,8 @@ impl AddTransaction {
             description: description,
             account_id: account.id.unwrap(),
             category_id: category.id.unwrap(),
-            amount: amount
+            amount: amount,
+            meta_info: MetaInfo::new(Some(Clock::now()), None, None)
         })
     }
 
