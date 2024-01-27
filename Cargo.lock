@@ -225,6 +225,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-targets 0.48.5",
 ]
@@ -819,9 +820,11 @@ dependencies = [
  "dirs",
  "git2",
  "gpgme",
+ "lazy_static",
  "rand",
  "rusqlite",
  "scrypt",
+ "serde",
  "typenum",
  "uuid",
 ]
