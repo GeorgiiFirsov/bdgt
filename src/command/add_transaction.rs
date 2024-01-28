@@ -65,7 +65,7 @@ impl Command for AddTransaction {
         }
 
         while {
-            budget.add_transaction(Self::input_transaction(parameters.full, &accounts, &categories)?)?;
+            budget.add_transaction(&Self::input_transaction(parameters.full, &accounts, &categories)?)?;
 
             //
             // If multiple transactions requested, then ask if one needs to add another one

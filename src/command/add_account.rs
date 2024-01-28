@@ -26,7 +26,7 @@ impl Command for AddAccount {
         let budget = binding::open_budget()?;
 
         while {
-            budget.add_account(Self::input_account()?)?;
+            budget.add_account(&Self::input_account()?)?;
 
             //
             // If multiple accounts requested, then ask if one needs to add another one

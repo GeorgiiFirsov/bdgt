@@ -38,7 +38,7 @@ impl Command for AddPlan {
         }
 
         while {
-            budget.add_plan(Self::input_plan(&categories)?)?;
+            budget.add_plan(&Self::input_plan(&categories)?)?;
 
             //
             // If multiple plans requested, then ask if one needs to add another one

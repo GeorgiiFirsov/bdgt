@@ -27,7 +27,7 @@ impl Command for AddCategory {
         let budget = binding::open_budget()?;
 
         while {
-            budget.add_category(Self::input_category()?)?;
+            budget.add_category(&Self::input_category()?)?;
 
             //
             // If multiple categories requested, then ask if one needs to add another one
