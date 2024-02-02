@@ -52,12 +52,13 @@ impl CommandInternal for AddAccount {
 impl AddAccount {
     fn input_account() -> Result<Account> {
         let name = console::input_string_with_prompt("Enter account name")?;
-        let balance = console::input_number_with_prompt("Enter initial balance")?;
+        let initial_balance = console::input_number_with_prompt("Enter initial balance")?;
 
         Ok(Account { 
             id: None,
             name: name, 
-            balance: balance,
+            balance: initial_balance,
+            initial_balance: initial_balance,
             meta_info: MetaInfo::new(Some(Clock::now()), None, None)
         })
     }
