@@ -87,6 +87,7 @@ implement_from_error!(
     minus::MinusError, 
     std::fmt::Error, 
     std::string::FromUtf8Error,
+    pinentry::Error,
 );
 
 

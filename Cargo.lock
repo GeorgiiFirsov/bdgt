@@ -154,6 +154,7 @@ dependencies = [
  "minus",
  "pinentry",
  "prettytable-rs",
+ "secrecy",
  "uuid",
 ]
 
