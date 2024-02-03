@@ -56,6 +56,7 @@ fn run() -> Result<()> {
         command::AddAccount,
         command::AddCategory,
         command::AddPlan,
+        command::RemoveTransaction,
         command::RemoveAccount,
         command::RemoveCategory,
         command::RemovePlan,
