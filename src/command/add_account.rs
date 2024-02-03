@@ -15,6 +15,11 @@ impl Command for AddAccount {
 
     const ABOUT: &'static str = "Add an account(s) in interactive mode";
 
+    fn aliases(command: clap::Command) -> clap::Command {
+        command
+            .visible_alias("add-acc")
+    }
+
     fn add_args(command: clap::Command) -> clap::Command {
         command
             .arg(clap::arg!(-m --multi "add several accounts one-by-one"))

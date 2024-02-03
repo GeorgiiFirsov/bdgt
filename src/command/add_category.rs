@@ -16,6 +16,11 @@ impl Command for AddCategory {
 
     const ABOUT: &'static str = "Add a category(s) in interactive mode";
 
+    fn aliases(command: clap::Command) -> clap::Command {
+        command
+            .visible_alias("add-cat")
+    }
+
     fn add_args(command: clap::Command) -> clap::Command {
         command
             .arg(clap::arg!(-m --multi "add several categories one-by-one"))
