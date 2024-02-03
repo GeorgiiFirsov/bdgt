@@ -14,6 +14,11 @@ impl Command for RemoveCategory {
 
     const ABOUT: &'static str = "Remove selected categories";
 
+    fn aliases(command: clap::Command) -> clap::Command {
+        command
+            .visible_aliases(["rm-category", "rm-cat"])
+    }
+
     fn invoke(_matches: &clap::ArgMatches) -> Result<()> {
         let budget = binding::open_budget()?;
         let categories = budget.categories()?;

@@ -13,6 +13,11 @@ impl Command for RemoveAccount {
 
     const ABOUT: &'static str = "Remove selected accounts";
 
+    fn aliases(command: clap::Command) -> clap::Command {
+        command
+            .visible_aliases(["rm-account", "rm-acc"])
+    }
+
     fn invoke(_matches: &clap::ArgMatches) -> Result<()> {
         let budget = binding::open_budget()?;
         let accounts = budget.accounts()?;

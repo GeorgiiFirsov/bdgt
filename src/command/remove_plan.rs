@@ -13,6 +13,11 @@ impl Command for RemovePlan {
 
     const ABOUT: &'static str = "Remove selected plans";
 
+    fn aliases(command: clap::Command) -> clap::Command {
+        command
+            .visible_alias("rm-plan")
+    }
+
     fn invoke(_matches: &clap::ArgMatches) -> Result<()> {
         let budget = binding::open_budget()?;
         let plans = budget.plans()?;

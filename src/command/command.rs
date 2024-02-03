@@ -22,17 +22,25 @@ pub(crate) trait Command {
     /// By default provides short and long description and calls
     /// arguments setup.
     fn make_command() -> clap::Command {
-        Self::add_args(
-            clap::Command::new(Self::VERB)
-                .about(Self::ABOUT)
-                .long_about(Self::LONG_ABOUT)   
-        )
+        let command = clap::Command::new(Self::VERB)
+            .about(Self::ABOUT)
+            .long_about(Self::LONG_ABOUT);
+
+        let command = Self::add_args(command);
+        Self::aliases(command)
     }
 
     /// Adds necessary arguments to a command.
     /// 
     /// By default does nothing.
     fn add_args(command: clap::Command) -> clap::Command {
+        command
+    }
+
+    /// Adds aliases to a command.
+    /// 
+    /// By default does nothing.
+    fn aliases(command: clap::Command) -> clap::Command {
         command
     }
 
