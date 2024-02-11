@@ -95,8 +95,8 @@ implement_from_error!(
 /// by forwarding the process directly to [`libbdgt::error::Error].
 macro_rules! implement_from_error_fwd {
     ($err_type:ty, $($err_types:ty),+ $(,)?) => {
-        implement_from_error_simple!($err_type);
-        implement_from_error_simple!($($err_types, )+);
+        implement_from_error_fwd!($err_type);
+        implement_from_error_fwd!($($err_types, )+);
     };
     ($err_type:ty $(,)?) => {
         impl From<$err_type> for Error {
