@@ -74,6 +74,7 @@ impl Sync {
             .required("Passphrase is required")
             .interact()?;
         
+        println!("Symmetric key generation may take a while...");
         budget.perform_sync(passphrase.expose_secret().as_bytes())?;
 
         Ok(())
