@@ -1,4 +1,6 @@
-use libbdgt::storage::{Transaction, CategoryType, Category, Account};
+use libbdgt::datetime::Clock;
+use libbdgt::core::InstanceId;
+use libbdgt::storage::{Transaction, CategoryType, Category, Account, MetaInfo};
 
 use super::command::{Command, CommandInternal};
 use super::common;
@@ -48,6 +50,8 @@ impl Command for AddTransaction {
         let parameters = Self::parse_args(matches)?;
         let budget = binding::open_budget()?;
 
+        let instance_id = budget.instance_id();
+
         let accounts = budget.accounts()?;
 
         if accounts.is_empty() {
@@ -64,7 +68,7 @@ impl Command for AddTransaction {
         }
 
         while {
-            budget.add_transaction(Self::input_transaction(parameters.full, &accounts, &categories)?)?;
+            budget.add_transaction(&Self::input_transaction(parameters.full, &accounts, &categories, instance_id)?)?;
 
             //
             // If multiple transactions requested, then ask if one needs to add another one
@@ -104,7 +108,7 @@ impl CommandInternal for AddTransaction {
 
 
 impl AddTransaction {
-    fn input_transaction(full: bool, accounts: &Vec<Account>, categories: &Vec<Category>) -> Result<Transaction> {
+    fn input_transaction(full: bool, accounts: &Vec<Account>, categories: &Vec<Category>, instance_id: &InstanceId) -> Result<Transaction> {
         //
         // Ask for category
         //
@@ -151,7 +155,7 @@ impl AddTransaction {
             dateparser::parse(&datetime)?
         }
         else {
-            chrono::Utc::now()
+            Clock::now()
         };
 
         Ok(Transaction {
@@ -160,7 +164,8 @@ impl AddTransaction {
             description: description,
             account_id: account.id.unwrap(),
             category_id: category.id.unwrap(),
-            amount: amount
+            amount: amount,
+            meta_info: MetaInfo::new(instance_id, Some(Clock::now()), None, None)
         })
     }
 

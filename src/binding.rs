@@ -1,34 +1,37 @@
 use libbdgt::crypto::CryptoEngine;
 use libbdgt::location::Location;
 
-use libbdgt::{core, crypto, config, storage, location};
+use libbdgt::{core, crypto, storage, location, sync};
 use libbdgt::error::{Result, Error};
 
 use crate::errors;
 
 
 /// Cryptographic engine type alias for quick engine changes.
-type Engine = crypto::GpgCryptoEngine;
+type CryptographicEngine = crypto::GpgCryptoEngine;
+
+/// Synchronization engine type alias for quick engine changes.
+type SynchronizationEngine = sync::GitSyncEngine;
 
 /// Corresponding key identifier type alias.
-type KeyId = <Engine as CryptoEngine>::KeyId;
+type KeyId = <CryptographicEngine as CryptoEngine>::KeyId;
 
 /// Storage type alias for quick storage changes.
 type Storage = storage::DbStorage;
 
 /// Config type alias for quick config changes.
-type Config = config::Config<Engine>;
+type Config = core::Config<CryptographicEngine>;
 
 /// Budget type alias. Instantiation of generic type with concrete parameters.
 /// Public for current crate to allow passing as a parameter into functions.
-pub(crate) type Budget = core::Budget<Engine, Storage>;
+pub(crate) type Budget = core::Budget<CryptographicEngine, SynchronizationEngine, Storage>;
 
 
 /// Queries for cryptographic engine information.
 /// 
 /// Returns engine's name and version.
 pub(crate) fn query_engine_info() -> Result<(&'static str, &'static str)> {
-    let engine = Engine::new_dummy()?;
+    let engine = CryptographicEngine::new_dummy()?;
     Ok((engine.engine(), engine.version()))
 }
 
@@ -36,7 +39,8 @@ pub(crate) fn query_engine_info() -> Result<(&'static str, &'static str)> {
 /// Performs initialization of the storage.
 /// 
 /// * `key_id` - identifier of a key used to protect data
-pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget> {
+/// * `remote` - remote repository URL
+pub(crate) fn initialize_budget(key_id: &str, remote: Option<&str>) -> Result<Budget> {
     //
     // Check for storage existence
     //
@@ -52,17 +56,18 @@ pub(crate) fn initialize_budget(key_id: &str) -> Result<Budget> {
     //
 
     let id = KeyId::new(key_id);
-    let engine = Engine::create(&loc, &id)?;
+    let crypto_engine = CryptographicEngine::create(&loc, &id)?;
 
     //
     // Key is present and suitable for encryption,
-    // now I can create storage
+    // now I can create the rest things
     //
 
     let config = Config::create(&loc, &id)?;
     let storage = Storage::create(&loc)?;
+    let sync_engine = SynchronizationEngine::create(&loc, remote)?;
     
-    let budget = Budget::new(engine, storage, config)?;
+    let budget = Budget::new(crypto_engine, sync_engine, storage, config)?;
     budget.initialize()?;
 
     Ok(budget)
@@ -77,11 +82,12 @@ pub(crate) fn open_budget() -> Result<Budget> {
     // Storage root exists here, now I can just open everything
     //
 
-    let engine = Engine::open(&loc)?;
+    let engine = CryptographicEngine::open(&loc)?;
     let config = Config::open(&loc)?;
     let storage = Storage::open(&loc)?;
+    let sync_engine = SynchronizationEngine::open(&loc)?;
 
-    Budget::new(engine, storage, config)
+    Budget::new(engine, sync_engine, storage, config)
 }
 
 

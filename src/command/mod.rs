@@ -14,6 +14,7 @@ mod add_plan;
 mod remove_account;
 mod remove_category;
 mod remove_plan;
+mod sync;
 mod service;
 mod about;
 
@@ -29,5 +30,6 @@ pub(crate) use self::add_plan::AddPlan;
 pub(crate) use self::remove_account::RemoveAccount;
 pub(crate) use self::remove_category::RemoveCategory;
 pub(crate) use self::remove_plan::RemovePlan;
+pub(crate) use self::sync::Sync;
 pub(crate) use self::service::Service;
 pub(crate) use self::about::About;

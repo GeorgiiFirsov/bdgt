@@ -2,6 +2,7 @@ extern crate prettytable;
 extern crate dateparser;
 extern crate dialoguer;
 extern crate itertools;
+extern crate pinentry;
 extern crate colored;
 extern crate libbdgt;
 extern crate anyhow;
@@ -9,7 +10,7 @@ extern crate chrono;
 extern crate minus;
 extern crate clap;
 
-mod timestamp;
+mod datetime;
 mod console;
 mod command;
 mod binding;
@@ -59,6 +60,7 @@ fn run() -> Result<()> {
         command::RemoveAccount,
         command::RemoveCategory,
         command::RemovePlan,
+        command::Sync,
         command::Service,
         command::About,
     )

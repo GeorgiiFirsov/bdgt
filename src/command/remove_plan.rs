@@ -1,3 +1,5 @@
+use libbdgt::datetime::Clock;
+
 use super::command::{Command, CommandInternal};
 use crate::error::Result;
 use crate::console;
@@ -35,7 +37,7 @@ impl Command for RemovePlan {
 
         for idx in selection {
             let plan = &plans[idx];
-            match budget.remove_plan(plan.id.unwrap()) {
+            match budget.remove_plan(plan.id.unwrap(), Clock::now()) {
                 Ok(_) => {},
                 Err(e) => eprintln!("Cannot remove plan '{}': {}", plan.name, e)
             }

@@ -11,7 +11,7 @@ pub(crate) struct Initialize;
 impl Command for Initialize {
     const VERB: &'static str = "init";
 
-    const ABOUT: &'static str = "Initialize storage and use KEY_ID for sensitive data protection";
+    const ABOUT: &'static str = "Initialize storage";
 
     const LONG_ABOUT: &'static str = misc::multiline!(
         "This command MUST be invoked before any other command may be run.",
@@ -22,7 +22,9 @@ impl Command for Initialize {
     );
 
     fn add_args(command: clap::Command) -> clap::Command {
-        command.arg(clap::arg!(<KEY_ID> "key identifier for data protection"))
+        command
+            .arg(clap::arg!(<KEY_ID> "key identifier for data protection"))
+            .arg(clap::arg!(-r --remote <REMOTE> "remote repository for syncronization"))
     }
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
@@ -30,8 +32,8 @@ impl Command for Initialize {
         // Parse args and run initialization
         //
 
-        let key_id = Self::parse_args(matches)?;
-        let budget = binding::initialize_budget(&key_id)?;
+        let (key_id, remote) = Self::parse_args(matches)?;
+        let budget = binding::initialize_budget(&key_id, remote.as_deref())?;
 
         //
         // Just to be nice -- print some information
@@ -53,9 +55,12 @@ impl Command for Initialize {
 
 
 impl CommandInternal for Initialize {
-    type ParsedArgs = String;
+    type ParsedArgs = (String, Option<String>);
 
     fn parse_args(matches: &clap::ArgMatches) -> Result<Self::ParsedArgs> {
-        Self::get_one(matches, "KEY_ID")
+        let key_id = Self::get_one(matches, "KEY_ID")?;
+        let remote = Self::get_one_opt(matches, "remote");
+
+        Ok((key_id, remote))
     }
 }

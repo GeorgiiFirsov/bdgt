@@ -1,3 +1,5 @@
+use libbdgt::datetime::Clock;
+
 use super::command::{Command, CommandInternal};
 use crate::error::Result;
 use crate::console;
@@ -38,7 +40,7 @@ impl Command for RemoveAccount {
             let force = console::confirm_with_prompt(
                 "Remove account with all corresponding transactions?", false)?;
 
-            match budget.remove_account(account.id.unwrap(), force) {
+            match budget.remove_account(account.id.unwrap(), force, Clock::now()) {
                 Ok(_) => {},
                 Err(e) => eprintln!("Cannot remove account '{}': {}", account.name, e)
             }

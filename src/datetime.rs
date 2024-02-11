@@ -1,4 +1,4 @@
-use libbdgt::storage::Timestamp;
+use libbdgt::datetime::{Clock, Timestamp};
 
 use chrono::{TimeZone, Datelike};
 
@@ -40,7 +40,7 @@ pub(crate) fn absolute_month(relative_month: i32) -> Month {
         return relative_month as Month;
     }
 
-    let current_month = chrono::Utc::now().month() as i32;
+    let current_month = Clock::now().month() as i32;
     match (current_month + relative_month) % 12 {
         0 => 12 as Month,
         m => m as Month
@@ -56,7 +56,7 @@ pub(crate) fn absolute_year(relative_year: i32) -> Year {
         return relative_year as Year;
     }
 
-    let current_year = chrono::Utc::now().year();
+    let current_year = Clock::now().year();
     current_year + relative_year
 }
 

@@ -1,4 +1,6 @@
-use libbdgt::storage::{Plan, Category, CategoryType};
+use libbdgt::datetime::Clock;
+use libbdgt::core::InstanceId;
+use libbdgt::storage::{Plan, Category, CategoryType, MetaInfo};
 
 use super::command::{Command, CommandInternal};
 use super::common;
@@ -26,6 +28,8 @@ impl Command for AddPlan {
         let multi = Self::parse_args(matches)?;
         let budget = binding::open_budget()?;
 
+        let instance_id = budget.instance_id();
+
         //
         // Plans are supposed to be only for spendings
         //
@@ -37,7 +41,7 @@ impl Command for AddPlan {
         }
 
         while {
-            budget.add_plan(Self::input_plan(&categories)?)?;
+            budget.add_plan(&Self::input_plan(&categories, instance_id)?)?;
 
             //
             // If multiple plans requested, then ask if one needs to add another one
@@ -61,7 +65,7 @@ impl CommandInternal for AddPlan {
 
 
 impl AddPlan {
-    fn input_plan(categories: &Vec<Category>) -> Result<Plan> {
+    fn input_plan(categories: &Vec<Category>, instance_id: &InstanceId) -> Result<Plan> {
         //
         // Ask for category
         //
@@ -91,7 +95,8 @@ impl AddPlan {
             id: None,
             category_id: category.id.unwrap(),
             name: name,
-            amount_limit: amount_limit
+            amount_limit: amount_limit,
+            meta_info: MetaInfo::new(instance_id, Some(Clock::now()), None, None)
         })
     }
 
