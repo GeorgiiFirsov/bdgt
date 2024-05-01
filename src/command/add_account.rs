@@ -1,5 +1,4 @@
 use libbdgt::datetime::Clock;
-use libbdgt::core::InstanceId;
 use libbdgt::storage::{Account, MetaInfo};
 
 use super::command::{Command, CommandInternal};
@@ -26,10 +25,8 @@ impl Command for AddAccount {
         let multi = Self::parse_args(matches)?;
         let budget = binding::open_budget()?;
 
-        let instance_id = budget.instance_id();
-
         while {
-            budget.add_account(&Self::input_account(instance_id)?)?;
+            budget.add_account(&Self::input_account()?)?;
 
             //
             // If multiple accounts requested, then ask if one needs to add another one
@@ -53,7 +50,7 @@ impl CommandInternal for AddAccount {
 
 
 impl AddAccount {
-    fn input_account(instance_id: &InstanceId) -> Result<Account> {
+    fn input_account() -> Result<Account> {
         let name = console::input_string_with_prompt("Enter account name")?;
         let initial_balance = console::input_number_with_prompt("Enter initial balance")?;
 
@@ -62,7 +59,7 @@ impl AddAccount {
             name: name, 
             balance: initial_balance,
             initial_balance: initial_balance,
-            meta_info: MetaInfo::new(instance_id, Some(Clock::now()), None, None)
+            meta_info: MetaInfo::new(Some(Clock::now()), None, None)
         })
     }
 
