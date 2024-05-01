@@ -1,3 +1,4 @@
+use libbdgt::datetime::{Clock, Timestamp};
 use libbdgt::storage::{Account, Id};
 
 use super::command::{Command, CommandInternal};
@@ -5,6 +6,16 @@ use crate::error::{Result, Error};
 use crate::console;
 use crate::binding;
 use crate::errors;
+
+
+/// Structure with command parameters.
+pub(crate) struct Parameters {
+    /// Perform multiple transfers in a row.
+    multi: bool,
+
+    /// Input all fields.
+    full: bool,
+}
 
 
 /// Transfer addition command. Adds a new transfer transactions in interactive mode.
@@ -19,10 +30,11 @@ impl Command for Transfer {
     fn add_args(command: clap::Command) -> clap::Command {
         command
             .arg(clap::arg!(-m --multi "transfer between several accounts in a row"))
+            .arg(clap::arg!(-f --full "configure all possible transaction(s) options"))
     }
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {
-        let multi = Self::parse_args(matches)?;
+        let parameters = Self::parse_args(matches)?;
         let budget = binding::open_budget()?;
 
         let accounts = budget.accounts()?;
@@ -32,10 +44,10 @@ impl Command for Transfer {
         }
 
         while {
-            let (amount, from, to) = Self::input_transfer(&accounts)?;
+            let (amount, from, to, timestamp) = Self::input_transfer(parameters.full, &accounts)?;
 
             if from != to {
-                budget.add_transfer(amount, from, to)?;
+                budget.add_transfer(amount, from, to, timestamp)?;
             }
             else {
                 println!("FROM and TO accounts are the same, skipped...");
@@ -45,7 +57,7 @@ impl Command for Transfer {
             // If multiple transfers requested, then ask if one needs to add another one
             //
 
-            multi && Self::needs_another_transfer()?
+            parameters.multi && Self::needs_another_transfer()?
         } { /* Intentionally empty */ } 
 
         Ok(())
@@ -54,16 +66,22 @@ impl Command for Transfer {
 
 
 impl CommandInternal for Transfer {
-    type ParsedArgs = bool;
+    type ParsedArgs = Parameters;
 
     fn parse_args(matches: &clap::ArgMatches) -> Result<Self::ParsedArgs> {
-        Self::get_one(matches, "multi")
+        let multi = Self::get_one(matches, "multi")?;
+        let full = Self::get_one(matches, "full")?;
+
+        Ok(Parameters {
+            multi: multi,
+            full: full
+        })
     }
 }
 
 
 impl Transfer {
-    fn input_transfer(accounts: &Vec<Account>) -> Result<(isize, Id, Id)> {
+    fn input_transfer(full: bool, accounts: &Vec<Account>) -> Result<(isize, Id, Id, Timestamp)> {
         //
         // Ask for 'from' and 'to' accounts
         //
@@ -91,7 +109,15 @@ impl Transfer {
 
         let amount = console::input_number_with_prompt("Amount")?;
 
-        Ok((amount, from, to))
+        let timestamp = if full {
+            let datetime = console::input_string_with_prompt("Enter date and time of the transfer")?;
+            dateparser::parse(&datetime)?
+        }
+        else {
+            Clock::now()
+        };
+
+        Ok((amount, from, to, timestamp))
     }
 
     fn needs_another_transfer() -> Result<bool> {

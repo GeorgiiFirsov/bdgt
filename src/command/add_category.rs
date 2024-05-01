@@ -1,5 +1,4 @@
 use libbdgt::datetime::Clock;
-use libbdgt::core::InstanceId;
 use libbdgt::storage::{Category, MetaInfo};
 
 use super::command::{Command, CommandInternal};
@@ -27,10 +26,8 @@ impl Command for AddCategory {
         let multi = Self::parse_args(matches)?;
         let budget = binding::open_budget()?;
 
-        let instance_id = budget.instance_id();
-
         while {
-            budget.add_category(&Self::input_category(instance_id)?)?;
+            budget.add_category(&Self::input_category()?)?;
 
             //
             // If multiple categories requested, then ask if one needs to add another one
@@ -54,7 +51,7 @@ impl CommandInternal for AddCategory {
 
 
 impl AddCategory {
-    fn input_category(instance_id: &InstanceId) -> Result<Category> {
+    fn input_category() -> Result<Category> {
         let selection = console::select_from_with_prompt(&common::category_types(), 
             "Select what type of category you want")?;
             
@@ -64,7 +61,7 @@ impl AddCategory {
             id: None,
             name: name, 
             category_type: common::category_type_by_index(selection)?,
-            meta_info: MetaInfo::new(instance_id, Some(Clock::now()), None, None)
+            meta_info: MetaInfo::new(Some(Clock::now()), None, None)
         })
     }
 
