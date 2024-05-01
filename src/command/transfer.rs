@@ -30,7 +30,7 @@ impl Command for Transfer {
     fn add_args(command: clap::Command) -> clap::Command {
         command
             .arg(clap::arg!(-m --multi "transfer between several accounts in a row"))
-            .arg(clap::arg!(-f --full "configure all possible transaction(s) options"))
+            .arg(clap::arg!(-f --full "configure all possible transfer(s) options"))
     }
 
     fn invoke(matches: &clap::ArgMatches) -> Result<()> {

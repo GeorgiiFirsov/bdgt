@@ -33,8 +33,8 @@ enum ReportTarget {
     /// Report is built for an account. If none specified, all accounts are used.
     Account(Option<Id>),
 
-    /// Report is built for a category. If none specified, all categories are used.
-    Category(Option<Id>),
+    /// Report is built for a category.
+    Category(()), // For now, reports for single category is not supported
 
     /// Report is built for a plan. If none specified, all plans are used.
     Plan(Option<Id>),
@@ -193,7 +193,7 @@ impl Report {
         }
 
         if Self::get_one(matches, "categories")? {
-            return Ok(ReportTarget::Category(None));
+            return Ok(ReportTarget::Category(()));
         }
 
         if Self::get_one(matches, "plans")? {
